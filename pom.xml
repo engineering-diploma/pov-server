@@ -15,6 +15,7 @@
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>11</java.version>
+        <vaadin.version>14.6.8</vaadin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -82,7 +83,28 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>
+                vaadin-spring-boot-starter
+            </artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-bom</artifactId>
+                <!-- Declare the latest Vaadin version
+                     as a property or directly here -->
+                <version>${vaadin.version}</version> <!-- <1> -->
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
