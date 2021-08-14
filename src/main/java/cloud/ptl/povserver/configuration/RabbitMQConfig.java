@@ -9,10 +9,12 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
+@Profile("!test")
 @Configuration
 public class RabbitMQConfig {
     @Value("${ptl.rabbit.host}")
