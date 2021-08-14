@@ -2,3 +2,12 @@ spring:
   profiles:
     active:
       - dev
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    password: "pov12082021"
+    username: "pov"
+    url: "jdbc:mysql://ptl.cloud:3306/pov?ssl=true"
