@@ -5,13 +5,29 @@ is a simple Spring based server for managing POV project
 ## Used technologies
 
 - Spring
-    - Boot
-    - Repository
-    - Data JPA
+  - Boot
+  - Repository
+  - Data JPA
 - MySQL
 - Hibernate ORM
-- Kafka
 - RabbitMQ
+
+## How to run
+
+```bash
+  docker run 
+    -p <port>:8080 
+    -e DB_USERNAME=... 
+    -e DB_PASSWORD=... 
+    -e DB_URL=... 
+    -e RABBIT_HOST=... 
+    -e RABBIT_PORT=... 
+    -e RABBIT_USERNAME=... 
+    -e RABBIT_PASSWORD=... 
+    ghcr.io/engineering-diploma/pov-server:latest
+```
+
+Both MySQL and RabbitMQ connection should be encrypted or fatal errors could occur
 
 ## What is POV
 

@@ -1,0 +1,12 @@
+#spring:
+#  datasource:
+#    url: "jdbc:mysql://ptl.cloud:3306/pov?ssl=true"
+#    password: ""
+#    username: "pov"
+
+#ptl:
+#  rabbit:
+#    host: "ptl.cloud"
+#    port: 5671
+#    username: "pov"
+#    password: ""

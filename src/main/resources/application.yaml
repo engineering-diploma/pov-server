@@ -8,6 +8,13 @@ spring:
       ddl-auto: update
 
   datasource:
-    password: "pov12082021"
-    username: "pov"
-    url: "jdbc:mysql://ptl.cloud:3306/pov?ssl=true"
+    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME}
+    url: ${DB_URL}
+
+ptl:
+  rabbit:
+    host: ${RABBIT_HOST}
+    port: ${RABBIT_PORT}
+    username: ${RABBIT_USERNAME}
+    password: ${RABBIT_PASSWORD}
