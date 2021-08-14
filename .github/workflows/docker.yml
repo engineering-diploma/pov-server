@@ -13,6 +13,8 @@ env:
 jobs:
   build-and-push-image:
     if: github.event.pull_request.merged == true
+    env:
+      SHA8: ${GITHUB_SHA::8}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,5 +42,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: $SHA8
           labels: ${{ steps.meta.outputs.labels }}
