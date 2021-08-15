@@ -10,3 +10,10 @@
 #    port: 5671
 #    username: "pov"
 #    password: ""
+
+#api:
+#  username: "api"
+#  password: "apidemo"
+#console:
+#  username: "test"
+#  password: "test"

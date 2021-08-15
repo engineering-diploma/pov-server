@@ -18,3 +18,9 @@ ptl:
     port: ${RABBIT_PORT}
     username: ${RABBIT_USERNAME}
     password: ${RABBIT_PASSWORD}
+  api:
+    username: ${API_USERNAME}
+    password: ${API_PASSWORD}
+  console:
+    username: ${CONSOLE_USERNAME}
+    password: ${CONSOLE_PASSWORD}
