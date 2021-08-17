@@ -13,7 +13,9 @@ public class QueueComponent extends VerticalLayout {
     public QueueComponent() {
         VerticalCardComponentContainer cardComponentContainer = new VerticalCardComponentContainer();
         Image img = new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Mersan.JPG/1920px-Mersan.JPG", "car");
+        Image img2 = new Image("https://cdn.motor1.com/images/mgl/ybYwo/s1/2019-cupra-formentor-concept.webp", "car");
         cardComponentContainer.add(this.createCard("Some title", "Some longer description", img));
+        cardComponentContainer.add(this.createCard("Another title", "Some longer description of car", img2));
         add(cardComponentContainer);
     }
 
