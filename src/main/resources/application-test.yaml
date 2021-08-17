@@ -2,3 +2,17 @@ spring:
   datasource:
     username: "sa"
     url: "jdbc:h2:mem:testdb"
+
+ptl:
+  rabbit:
+    host: "ptl.cloud"
+    port: 5671
+    username: "pov"
+    password: ""
+
+api:
+  username: "api"
+  password: "apidemo"
+console:
+  username: "test"
+  password: "test"
