@@ -10,9 +10,9 @@ ptl:
     username: "pov"
     password: ""
 
-api:
-  username: "api"
-  password: "apidemo"
-console:
-  username: "test"
-  password: "test"
+  api:
+    username: "api"
+    password: "apidemo"
+  console:
+    username: "test"
+    password: "test"
