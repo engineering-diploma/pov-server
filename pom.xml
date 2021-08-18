@@ -12,7 +12,7 @@
         <repository>
             <id>Vaadin Repo</id>
             <name>Vaadin Repo</name>
-            <url>http://vaadin.com/nexus/content/repositories/vaadin-addons/</url>
+            <url>https://vaadin.com/nexus/content/repositories/vaadin-addons/</url>
         </repository>
     </repositories>
     <groupId>cloud.ptl</groupId>
