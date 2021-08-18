@@ -7,4 +7,12 @@ spring:
     hibernate:
       ddl-auto: update
 
+logging:
+  level:
+    root: debug
 
+ptl:
+  download:
+    youtube: "youtube-movies"
+    gif: "gif"
+    gif_converted: "gif-movie"
