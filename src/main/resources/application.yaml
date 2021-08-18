@@ -1,13 +1,18 @@
 spring:
   profiles:
     active:
-      - dev
+      - prod
 
   jpa:
     hibernate:
       ddl-auto: update
 
-  datasource:
-    password: "pov12082021"
-    username: "pov"
-    url: "jdbc:mysql://ptl.cloud:3306/pov?ssl=true"
+logging:
+  level:
+    root: debug
+
+ptl:
+  download:
+    youtube: "youtube-movies"
+    gif: "gif"
+    gif_converted: "gif-movie"
