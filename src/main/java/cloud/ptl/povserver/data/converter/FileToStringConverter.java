@@ -8,11 +8,17 @@ import java.io.File;
 public class FileToStringConverter implements AttributeConverter<File, String> {
     @Override
     public String convertToDatabaseColumn(File file) {
-        return file.getAbsolutePath();
+        if (file == null) return "";
+        else {
+            return file.getAbsolutePath();
+        }
     }
 
     @Override
     public File convertToEntityAttribute(String s) {
-        return new File(s);
+        if (s.isBlank()) return null;
+        else {
+            return new File(s);
+        }
     }
 }
