@@ -1,6 +1,8 @@
 package cloud.ptl.povserver.vaadin;
 
 
+import cloud.ptl.povserver.service.queue.QueueService;
+import cloud.ptl.povserver.service.resource.ResourceService;
 import cloud.ptl.povserver.service.search.SearchService;
 import cloud.ptl.povserver.vaadin.utils.TabNameToContentMapper;
 import com.vaadin.flow.component.UI;
@@ -16,8 +18,14 @@ import com.vaadin.flow.router.Route;
 public class MainView extends AppLayout {
     private final TabNameToContentMapper tabNameToContentMapper;
 
-    public MainView(SearchService searchService) {
-        this.tabNameToContentMapper = new TabNameToContentMapper(searchService, UI.getCurrent());
+    public MainView(SearchService searchService, QueueService queueService, ResourceService resourceService) {
+        this.tabNameToContentMapper =
+                new TabNameToContentMapper(
+                        searchService,
+                        UI.getCurrent(),
+                        queueService,
+                        resourceService
+                );
         Image img = new Image("https://i.imgur.com/GPpnszs.png", "Vaadin Logo");
         Tabs tabs = new Tabs(
                 new Tab("Home"),

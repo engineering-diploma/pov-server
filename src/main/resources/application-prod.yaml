@@ -1,7 +1,8 @@
-datasource:
-  password: ${DB_PASSWORD}
-  username: ${DB_USERNAME}
-  url: ${DB_URL}
+spring:
+  datasource:
+    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME}
+    url: ${DB_URL}
 
 ptl:
   rabbit:

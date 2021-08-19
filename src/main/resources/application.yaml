@@ -9,7 +9,7 @@ spring:
 
 logging:
   level:
-    root: debug
+    root: info
 
 ptl:
   download:

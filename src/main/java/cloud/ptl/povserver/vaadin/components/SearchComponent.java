@@ -2,16 +2,16 @@ package cloud.ptl.povserver.vaadin.components;
 
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.service.download.DownloadCallback;
+import cloud.ptl.povserver.service.resource.ResourceService;
 import cloud.ptl.povserver.service.search.SearchService;
+import cloud.ptl.povserver.vaadin.utils.SearchComponentListener;
 import com.github.appreciated.card.RippleClickableCard;
 import com.github.appreciated.card.content.Item;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
@@ -19,6 +19,8 @@ import com.vaadin.flow.component.textfield.TextField;
 
 public class SearchComponent extends VerticalLayout {
     private final SearchService searchService;
+    private final ResourceService resourceService;
+    private final SearchComponentListener searchComponentListener;
 
     private ProgressBar progressBar;
     private Label progressLabel;
@@ -26,8 +28,10 @@ public class SearchComponent extends VerticalLayout {
 
     private UI ui;
 
-    public SearchComponent(SearchService searchService, UI ui) {
+    public SearchComponent(SearchService searchService, UI ui, ResourceService resourceService, SearchComponentListener searchComponentListener) {
+        this.searchComponentListener = searchComponentListener;
         this.searchService = searchService;
+        this.resourceService = resourceService;
         this.ui = ui;
         this.generateLayout();
     }
@@ -68,19 +72,17 @@ public class SearchComponent extends VerticalLayout {
 
     private RippleClickableCard createCard(ResourceDAO resourceDAO) {
         HorizontalLayout hl = new HorizontalLayout();
-        Image image = new Image();
+        Image image = new Image(resourceDAO.getThumbnailUrls().get(0), "an image");
         Item item = new Item(resourceDAO.getTitle(), resourceDAO.getDescription());
         hl.add(image);
-        image.setHeight("7%");
-        image.setWidth("15%");
         hl.add(item);
         RippleClickableCard rippleClickableCard = new RippleClickableCard(hl);
-        ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setTarget(rippleClickableCard);
-        contextMenu.addItem("Delete", e -> Notification.show("Deleted"));
-        contextMenu.addItem("Move Up", e -> Notification.show("Move up"));
-        contextMenu.addItem("Move Down", e -> Notification.show("Moved Down"));
-        add(contextMenu);
+//        ContextMenu contextMenu = new ContextMenu();
+//        contextMenu.setTarget(rippleClickableCard);
+//        contextMenu.addItem("Delete", e -> Notification.show("Deleted"));
+//        contextMenu.addItem("Move Up", e -> Notification.show("Move up"));
+//        contextMenu.addItem("Move Down", e -> Notification.show("Moved Down"));
+//        add(contextMenu);
         rippleClickableCard.setId("result-card");
         return rippleClickableCard;
     }
@@ -111,8 +113,9 @@ public class SearchComponent extends VerticalLayout {
                     ;
 
                     add(createCard(resourceDAO));
+                    resourceService.save(resourceDAO);
+                    searchComponentListener.onUpdate();
                 });
-
             }
 
             @Override

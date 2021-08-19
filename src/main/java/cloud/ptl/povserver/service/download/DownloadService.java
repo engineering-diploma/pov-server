@@ -60,7 +60,7 @@ public class DownloadService {
                         resourceDAO.setDescription(
                                 videoInfo.details().description()
                         );
-                        videoInfo.details().thumbnails().forEach(image -> System.out.println("Thumbnail: " + image));
+                        resourceDAO.setThumbnailUrls(videoInfo.details().thumbnails());
                         resourceDAO.setMovie(file);
                         resourceDAO.setIsMovie(true);
                         resourceDAO.setTitle(videoInfo.details().title());
