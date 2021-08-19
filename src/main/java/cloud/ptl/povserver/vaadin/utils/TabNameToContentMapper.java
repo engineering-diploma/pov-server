@@ -1,5 +1,7 @@
 package cloud.ptl.povserver.vaadin.utils;
 
+import cloud.ptl.povserver.service.queue.QueueService;
+import cloud.ptl.povserver.service.resource.ResourceService;
 import cloud.ptl.povserver.service.search.SearchService;
 import cloud.ptl.povserver.vaadin.components.MainComponent;
 import cloud.ptl.povserver.vaadin.components.QueueComponent;
@@ -16,12 +18,21 @@ public class TabNameToContentMapper {
     private final SearchService searchService;
     private final Map<String, Component> mappings;
 
-    public TabNameToContentMapper(SearchService searchService, UI ui) {
+    public TabNameToContentMapper(SearchService searchService, UI ui, QueueService queueService, ResourceService resourceService) {
         this.searchService = searchService;
+        QueueComponent queueComponent = new QueueComponent(queueService, ui);
+        SearchComponent searchComponent = new SearchComponent(
+                searchService,
+                ui,
+                resourceService,
+                queueComponent::init
+        );
+        MainComponent mainComponent = new MainComponent();
+
         this.mappings = Stream.of(new Object[][]{
-                {"Search", new SearchComponent(this.searchService, ui)},
-                {"Home", new MainComponent()},
-                {"Queue", new QueueComponent()}
+                {"Search", searchComponent},
+                {"Home", mainComponent},
+                {"Queue", queueComponent}
         }).collect(Collectors.toMap(d -> (String) d[0], d -> (Component) d[1]));
     }
 
