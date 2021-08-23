@@ -2,13 +2,11 @@ package cloud.ptl.povserver.service.resource;
 
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.data.repositories.ResourceRepository;
+import cloud.ptl.povserver.exception.NotFoundException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Service
@@ -21,6 +19,15 @@ public class ResourceService {
 
     public Collection<ResourceDAO> findAllResources() {
         return (Collection<ResourceDAO>) this.resourceRepository.findAll();
+    }
+
+    public ResourceDAO findById(Long id) throws NotFoundException {
+        Optional<ResourceDAO> optionalResource =
+                this.resourceRepository.findById(id);
+        if (optionalResource.isEmpty())
+            throw new NotFoundException("Resource with id=" + id + " not found");
+        else
+            return optionalResource.get();
     }
 
     public ResourceDAO save(ResourceDAO resourceDAO) {

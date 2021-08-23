@@ -1,8 +1,12 @@
-#spring:
-#  datasource:
-#    url: "jdbc:mysql://ptl.cloud:3306/pov?ssl=true"
-#    password: ""
-#    username: "pov"
+spring:
+  datasource:
+    url: "jdbc:h2:~/test"
+    password: ""
+    username: "sa"
+    driver-class-name: "org.h2.Driver"
+
+  jpa:
+    database-platform: "org.hibernate.dialect.H2Dialect"
 
 #ptl:
 #  rabbit:
