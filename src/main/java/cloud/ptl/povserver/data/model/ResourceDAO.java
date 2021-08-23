@@ -35,6 +35,14 @@ public class ResourceDAO {
     @Getter
     private Boolean isMovie;
 
+    @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "resource_id"),
+            inverseJoinColumns = @JoinColumn(name = "resolution_id"),
+            name = "resource_resolution"
+    )
+    private List<ResolutionDAO> resolutions;
+
     @PostPersist
     public void post() {
         if (this.orderr == null) orderr = id;

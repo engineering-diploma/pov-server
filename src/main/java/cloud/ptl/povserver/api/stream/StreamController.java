@@ -17,11 +17,21 @@ public class StreamController {
         this.streamService = streamService;
     }
 
-    @GetMapping("/vide/{id}")
+    @GetMapping("/video/{id}")
     public ResponseEntity<ResourceRegion> getVideoStream(
             @RequestHeader(value = "Range", required = false) String range,
             @PathVariable("id") Long id
     ) throws NotFoundException, IOException {
         return this.streamService.getVideoRegion(range, id);
+    }
+
+    @GetMapping("/video/resize/{id}")
+    public ResponseEntity<ResourceRegion> getVideoStreamResized(
+            @RequestHeader(value = "Range", required = false) String range,
+            @PathVariable("id") Long id,
+            @RequestParam("width") int width,
+            @RequestParam("height") int height
+    ) throws NotFoundException, IOException, InterruptedException {
+        return this.streamService.getVideoRegionResized(range, id, width, height);
     }
 }
