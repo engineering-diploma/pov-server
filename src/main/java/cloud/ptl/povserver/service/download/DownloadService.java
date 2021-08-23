@@ -1,6 +1,9 @@
 package cloud.ptl.povserver.service.download;
 
+import cloud.ptl.povserver.data.model.ResolutionDAO;
 import cloud.ptl.povserver.data.model.ResourceDAO;
+import cloud.ptl.povserver.service.resource.ResolutionService;
+import cloud.ptl.povserver.service.resource.ResourceService;
 import com.github.kiulian.downloader.YoutubeDownloader;
 import com.github.kiulian.downloader.downloader.YoutubeProgressCallback;
 import com.github.kiulian.downloader.downloader.request.RequestVideoFileDownload;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.util.ArrayList;
 
 @Service
 public class DownloadService {
@@ -29,6 +33,14 @@ public class DownloadService {
     private File youtubeDownloadDir;
     private File gifDownloadDir;
     private File gifConvertedDir;
+
+    private final ResolutionService resolutionService;
+    private final ResourceService resourceService;
+
+    public DownloadService(ResolutionService resolutionService, ResourceService resourceService) {
+        this.resolutionService = resolutionService;
+        this.resourceService = resourceService;
+    }
 
     @PostConstruct
     private void init() {
@@ -64,6 +76,13 @@ public class DownloadService {
                         resourceDAO.setMovie(file);
                         resourceDAO.setIsMovie(true);
                         resourceDAO.setTitle(videoInfo.details().title());
+                        resourceDAO.setResolutions(new ArrayList<>());
+                        ResolutionDAO resolutionDAO = new ResolutionDAO();
+                        resolutionDAO.setWidth(videoInfo.bestVideoFormat().width());
+                        resolutionDAO.setHeight(videoInfo.bestVideoFormat().height());
+                        resolutionDAO = resolutionService.save(resolutionDAO);
+                        resourceDAO.getResolutions().add(resolutionDAO);
+                        resourceDAO = resourceService.save(resourceDAO);
                         downloadCallback.onFinished(resourceDAO);
                         logger.info("Download complete");
                     }
@@ -74,7 +93,7 @@ public class DownloadService {
                     }
                 })
                 .saveTo(this.youtubeDownloadDir)
-                .renameTo(videoInfo.details().title())
+                .renameTo(videoInfo.details().title().replace(" ", "_"))
                 .async();
         //RequestVideoFileDownload request = new RequestVideoFileDownload(format);
         Response<File> response = this.youtubeDownloader.downloadVideoFile(request);
