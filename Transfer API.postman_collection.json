@@ -1,0 +1,133 @@
+{
+  "info": {
+    "_postman_id": "a1072c35-5861-4e0b-acc0-4475c6f7a3c5",
+    "name": "Transfer API",
+    "description": "API used to communicate to POV-Server from POV-Display",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "request video",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/video/4",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "video",
+            "4"
+          ]
+        },
+        "description": "Request single full sized video from server. Last element is video id. The only way to obtain this id is to listen on rabbit queue. Each time user asks to play video this id is send to user."
+      },
+      "response": [
+        {
+          "name": "request video - example 1",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/api/video/4",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "video",
+                "4"
+              ]
+            }
+          },
+          "_postman_previewlanguage": null,
+          "header": null,
+          "cookie": [],
+          "body": null
+        }
+      ]
+    },
+    {
+      "name": "request video rescalled",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/video/resize/4?height=120&width=120",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "video",
+            "resize",
+            "4"
+          ],
+          "query": [
+            {
+              "key": "height",
+              "value": "120"
+            },
+            {
+              "key": "width",
+              "value": "120"
+            }
+          ]
+        },
+        "description": "Ask server to stram rescaled version of video"
+      },
+      "response": [
+        {
+          "name": "request video rescalled - example 1",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/api/video/resize/4?height=120&width=120",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "api",
+                "video",
+                "resize",
+                "4"
+              ],
+              "query": [
+                {
+                  "key": "height",
+                  "value": "120"
+                },
+                {
+                  "key": "width",
+                  "value": "120"
+                }
+              ]
+            }
+          },
+          "_postman_previewlanguage": null,
+          "header": null,
+          "cookie": [],
+          "body": null
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "password",
+        "value": "apidemo",
+        "type": "string"
+      },
+      {
+        "key": "username",
+        "value": "api",
+        "type": "string"
+      }
+    ]
+  }
+}
