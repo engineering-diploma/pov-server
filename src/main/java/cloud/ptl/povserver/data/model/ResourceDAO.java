@@ -4,6 +4,8 @@ import cloud.ptl.povserver.data.converter.FileToStringConverter;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.File;
@@ -28,14 +30,15 @@ public class ResourceDAO {
     @Convert(converter = FileToStringConverter.class)
     private File movie;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<String> thumbnailUrls;
 
     @Setter
     @Getter
     private Boolean isMovie;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             joinColumns = @JoinColumn(name = "resource_id"),
             inverseJoinColumns = @JoinColumn(name = "resolution_id"),
