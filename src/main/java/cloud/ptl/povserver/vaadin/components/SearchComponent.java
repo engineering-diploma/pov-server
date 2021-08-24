@@ -113,7 +113,6 @@ public class SearchComponent extends VerticalLayout {
                     ;
 
                     add(createCard(resourceDAO));
-                    resourceService.save(resourceDAO);
                     searchComponentListener.onUpdate();
                 });
             }
