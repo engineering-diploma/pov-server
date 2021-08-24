@@ -1,5 +1,7 @@
 package cloud.ptl.povserver.vaadin.components;
 
+import cloud.ptl.povserver.amqp.RabbitSender;
+import cloud.ptl.povserver.amqp.converter.ResourceDAO2VideoPingMessageConverter;
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.service.queue.QueueService;
 import com.github.appreciated.card.RippleClickableCard;
@@ -20,10 +22,12 @@ import java.util.List;
 public class QueueComponent extends VerticalLayout {
     private final QueueService queueService;
     private final UI ui;
+    private final RabbitSender rabbitSender;
 
-    public QueueComponent(QueueService queueService, UI ui) {
+    public QueueComponent(QueueService queueService, UI ui, RabbitSender rabbitSender) {
         this.ui = ui;
         this.queueService = queueService;
+        this.rabbitSender = rabbitSender;
 
         this.init();
     }
@@ -63,6 +67,12 @@ public class QueueComponent extends VerticalLayout {
                 queueService.moveResourceDown(resourceDAO);
                 init();
             });
+        });
+        contextMenu.addItem("Play", e -> {
+            rabbitSender.pingAboutNewVideo(
+                    ResourceDAO2VideoPingMessageConverter.convert(resourceDAO)
+            );
+            Notification.show("Send to play");
         });
         add(contextMenu);
         return rippleClickableCard;

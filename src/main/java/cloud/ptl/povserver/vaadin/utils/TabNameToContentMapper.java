@@ -1,5 +1,6 @@
 package cloud.ptl.povserver.vaadin.utils;
 
+import cloud.ptl.povserver.amqp.RabbitSender;
 import cloud.ptl.povserver.service.queue.QueueService;
 import cloud.ptl.povserver.service.resource.ResourceService;
 import cloud.ptl.povserver.service.search.SearchService;
@@ -18,9 +19,9 @@ public class TabNameToContentMapper {
     private final SearchService searchService;
     private final Map<String, Component> mappings;
 
-    public TabNameToContentMapper(SearchService searchService, UI ui, QueueService queueService, ResourceService resourceService) {
+    public TabNameToContentMapper(SearchService searchService, UI ui, QueueService queueService, ResourceService resourceService, RabbitSender rabbitSender) {
         this.searchService = searchService;
-        QueueComponent queueComponent = new QueueComponent(queueService, ui);
+        QueueComponent queueComponent = new QueueComponent(queueService, ui, rabbitSender);
         SearchComponent searchComponent = new SearchComponent(
                 searchService,
                 ui,
