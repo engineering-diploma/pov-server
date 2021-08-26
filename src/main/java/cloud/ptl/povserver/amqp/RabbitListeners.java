@@ -2,6 +2,7 @@ package cloud.ptl.povserver.amqp;
 
 import cloud.ptl.povserver.amqp.message.MetricMessage;
 import cloud.ptl.povserver.data.model.MetricDAO;
+import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.service.metric.MetricsService;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RabbitListeners {
 
-    private MetricsService metricsService;
+    private final MetricsService metricsService;
 
     public RabbitListeners(MetricsService metricsService) {
         this.metricsService = metricsService;
@@ -32,9 +33,15 @@ public class RabbitListeners {
             )
     )
     public void displayControlListener(@Payload MetricMessage message) {
-        MetricDAO metricDAO = new MetricDAO();
-        metricDAO.setKeyy(message.getKey());
-        metricDAO.setValue(message.getValue());
+        MetricDAO metricDAO = null;
+        try {
+            metricDAO = this.metricsService.findByKey(message.getKey());
+            metricDAO.setValue(message.getValue());
+        } catch (NotFoundException e) {
+            metricDAO = new MetricDAO();
+            metricDAO.setKeyy(message.getKey());
+            metricDAO.setValue(message.getValue());
+        }
         this.metricsService.save(metricDAO);
     }
 }
