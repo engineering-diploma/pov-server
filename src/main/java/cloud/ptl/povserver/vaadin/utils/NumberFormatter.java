@@ -4,6 +4,9 @@ import lombok.experimental.UtilityClass;
 
 import java.text.DecimalFormat;
 
+/**
+ * Utility class used to format numbers in user interface
+ */
 @UtilityClass
 public class NumberFormatter {
     private static final DecimalFormat decimalFormat = new DecimalFormat("###,###,###");

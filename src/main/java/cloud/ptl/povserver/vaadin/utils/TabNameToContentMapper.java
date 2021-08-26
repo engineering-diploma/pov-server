@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Maps tab names to proper components embedded in page
+ */
 public class TabNameToContentMapper {
 
     private final Map<String, Component> mappings;
