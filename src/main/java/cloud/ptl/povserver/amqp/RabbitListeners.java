@@ -1,6 +1,8 @@
 package cloud.ptl.povserver.amqp;
 
-import cloud.ptl.povserver.amqp.message.ControlMessage;
+import cloud.ptl.povserver.amqp.message.MetricMessage;
+import cloud.ptl.povserver.data.model.MetricDAO;
+import cloud.ptl.povserver.service.metric.MetricsService;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
@@ -10,6 +12,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RabbitListeners {
+
+    private MetricsService metricsService;
+
+    public RabbitListeners(MetricsService metricsService) {
+        this.metricsService = metricsService;
+    }
+
     @RabbitListener(
             bindings = @QueueBinding(
                     value = @Queue(
@@ -22,7 +31,10 @@ public class RabbitListeners {
                     key = "pov-to-server-control-binding"
             )
     )
-    public void displayControlListener(@Payload ControlMessage controllMessage) {
-
+    public void displayControlListener(@Payload MetricMessage message) {
+        MetricDAO metricDAO = new MetricDAO();
+        metricDAO.setKeyy(message.getKey());
+        metricDAO.setValue(message.getValue());
+        this.metricsService.save(metricDAO);
     }
 }
