@@ -16,3 +16,6 @@ ptl:
     youtube: "youtube-movies"
     gif: "gif"
     gif_converted: "gif-movie"
+
+  display:
+    diameter: 20

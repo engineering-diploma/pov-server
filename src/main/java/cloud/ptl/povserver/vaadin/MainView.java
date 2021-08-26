@@ -2,6 +2,8 @@ package cloud.ptl.povserver.vaadin;
 
 
 import cloud.ptl.povserver.amqp.RabbitSender;
+import cloud.ptl.povserver.exception.NotFoundException;
+import cloud.ptl.povserver.service.metric.MetricsService;
 import cloud.ptl.povserver.service.queue.QueueService;
 import cloud.ptl.povserver.service.resource.ResourceService;
 import cloud.ptl.povserver.service.search.SearchService;
@@ -19,14 +21,15 @@ import com.vaadin.flow.router.Route;
 public class MainView extends AppLayout {
     private final TabNameToContentMapper tabNameToContentMapper;
 
-    public MainView(SearchService searchService, QueueService queueService, ResourceService resourceService, RabbitSender rabbitSender) {
+    public MainView(SearchService searchService, QueueService queueService, ResourceService resourceService, RabbitSender rabbitSender, MetricsService metricsService) throws NotFoundException {
         this.tabNameToContentMapper =
                 new TabNameToContentMapper(
                         searchService,
                         UI.getCurrent(),
                         queueService,
                         resourceService,
-                        rabbitSender
+                        rabbitSender,
+                        metricsService
                 );
         Image img = new Image("https://i.imgur.com/GPpnszs.png", "Vaadin Logo");
         Tabs tabs = new Tabs(
