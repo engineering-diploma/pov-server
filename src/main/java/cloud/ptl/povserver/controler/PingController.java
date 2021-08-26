@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
+/**
+ * This simple endpoint is made only for security testing, and some future login implementations
+ */
 @RestController
 @RequestMapping("/api/ping")
 public class PingController {
