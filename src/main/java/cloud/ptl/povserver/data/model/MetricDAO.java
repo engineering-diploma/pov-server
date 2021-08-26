@@ -19,4 +19,11 @@ public class MetricDAO {
 
     @CreationTimestamp
     private LocalDateTime creation;
+
+    public static MetricDAO empty() {
+        MetricDAO metricDAO = new MetricDAO();
+        metricDAO.setValue(0F);
+        metricDAO.setKeyy("");
+        return metricDAO;
+    }
 }
