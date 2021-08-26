@@ -23,4 +23,6 @@ public interface MetricRepository extends CrudRepository<MetricDAO, Long> {
             " m.creation >= :time"
     )
     Float getRPMSinceDate(@Param("time") LocalDateTime time);
+
+    Optional<MetricDAO> findByKeyy(String keyy);
 }
