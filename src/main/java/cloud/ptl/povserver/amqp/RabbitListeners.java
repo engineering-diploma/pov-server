@@ -11,6 +11,9 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+/**
+ * Listeners for rabbit MQ
+ */
 @Component
 public class RabbitListeners {
 
@@ -20,6 +23,11 @@ public class RabbitListeners {
         this.metricsService = metricsService;
     }
 
+    /**
+     * Main listener
+     *
+     * @param message received payload of message
+     */
     @RabbitListener(
             bindings = @QueueBinding(
                     value = @Queue(
@@ -33,6 +41,7 @@ public class RabbitListeners {
             )
     )
     public void displayControlListener(@Payload MetricMessage message) {
+        // here we would like to update message or create new if any exists
         MetricDAO metricDAO = null;
         try {
             metricDAO = this.metricsService.findByKey(message.getKey());

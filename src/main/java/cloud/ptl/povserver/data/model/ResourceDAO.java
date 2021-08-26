@@ -11,6 +11,10 @@ import javax.persistence.*;
 import java.io.File;
 import java.util.List;
 
+/**
+ * This is top level entity storing information about any resource in system.
+ * For further development there are flags stored to point what kind resource is
+ */
 @Data
 @Entity
 @Table(name = "movie")
@@ -48,6 +52,8 @@ public class ResourceDAO {
 
     @PostPersist
     public void post() {
+        // this is the only simple and declarative method to create sequence of exclusive numbers
+        // which will have meaning of order
         if (this.orderr == null) orderr = id;
     }
 }

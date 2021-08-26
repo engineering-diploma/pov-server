@@ -21,6 +21,9 @@ import java.net.MalformedURLException;
 
 import static java.lang.Math.min;
 
+/**
+ * Service used to stream video from server to clients
+ */
 @Service
 public class StreamService {
     private static final long CHUNK_SIZE = 1000000L;
@@ -34,11 +37,27 @@ public class StreamService {
         this.metricsService = metricsService;
     }
 
+    /**
+     * Returns ordered by client region of video
+     *
+     * @param rangeHeader header in user order pointing to which portion of video should be sent
+     * @param videoId     id of video stored in system
+     * @return stream of vide ordered by user
+     */
     public ResponseEntity<ResourceRegion> getVideoRegion(String rangeHeader, Long videoId) throws IOException, MalformedURLException, NotFoundException {
         String resourcePath = this.getVideoPath(videoId);
         return this.extractRegion(rangeHeader, resourcePath);
     }
 
+    /**
+     * Returns resized part of video ordered by user
+     *
+     * @param rangeHeader plae of video to send
+     * @param videoId     internal  id of vide
+     * @param width       width of new vide
+     * @param height      height of new video
+     * @return resized stream of vide
+     */
     public ResponseEntity<ResourceRegion> getVideoRegionResized(String rangeHeader, Long videoId, int width, int height) throws NotFoundException, IOException, InterruptedException {
         ResourceDAO resourceDAO = this.resourceService.findById(videoId);
         ResizeRequest resizeRequest = new ResizeRequest();
@@ -51,6 +70,13 @@ public class StreamService {
         return this.extractRegion(rangeHeader, resourcePath);
     }
 
+    /**
+     * Extract given part of vide
+     *
+     * @param rangeHeader  part of video to extract
+     * @param resourcePath path to resource to send in stream
+     * @return stream of vide
+     */
     private ResponseEntity<ResourceRegion> extractRegion(String rangeHeader, String resourcePath) throws IOException {
         FileUrlResource videoResource = new FileUrlResource(resourcePath);
         ResourceRegion resourceRegion = getResourceRegion(videoResource, rangeHeader);
@@ -60,10 +86,19 @@ public class StreamService {
                 .body(resourceRegion);
     }
 
+    /**
+     * Returns path to video with given id
+     *
+     * @param videoId internal id of vide
+     * @return path to this video
+     */
     private String getVideoPath(Long videoId) throws NotFoundException {
         return this.resourceService.findById(videoId).getMovie().getAbsolutePath();
     }
 
+    /**
+     * Returns region of vide
+     */
     private ResourceRegion getResourceRegion(UrlResource video, String httpHeaders) throws IOException {
         ResourceRegion resourceRegion = null;
 

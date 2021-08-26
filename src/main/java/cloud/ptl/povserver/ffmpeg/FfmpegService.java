@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+/**
+ * Service is used to call external program to convert vide into other formats.
+ */
 @Service
 public class FfmpegService {
     private final String FFMPEG_RESIZE_COMMAND =
@@ -29,8 +32,16 @@ public class FfmpegService {
         this.resolutionService = resolutionService;
     }
 
+    /**
+     * Resize given resource into given format
+     *
+     * @param resizeRequest request containing all information to conduct resizing
+     * @return resized resource
+     * @throws IOException if file cannot be found
+     */
     public ResourceDAO resize(ResizeRequest resizeRequest) throws IOException, InterruptedException {
         List<ResolutionDAO> availableResolutions = resizeRequest.getResourceDAO().getResolutions();
+        // checking if conversion was made before
         boolean alreadyContains =
                 availableResolutions.stream()
                         .anyMatch(el ->
@@ -39,6 +50,7 @@ public class FfmpegService {
         if (!alreadyContains) {
             this.callFFMPEG(resizeRequest);
         }
+        // update path to newly created resource
         String newPath = resizeRequest.getResourceDAO().getMovie().getAbsolutePath();
         newPath += resizeRequest.getWidth() + "x" + resizeRequest.getHeight() + ".webm";
         ResourceDAO resizedResource = resizeRequest.getResourceDAO();
@@ -46,6 +58,12 @@ public class FfmpegService {
         return resizedResource;
     }
 
+    /**
+     * Calls FFMPEG command line utility to generate resized resource
+     *
+     * @param resizeRequest request containing all needed informations to conduct resizing
+     * @throws IOException thrown if resize cannot be done, because file was not found
+     */
     private void callFFMPEG(ResizeRequest resizeRequest) throws IOException, InterruptedException {
         String inflateCommand =
                 String.format(
@@ -60,6 +78,7 @@ public class FfmpegService {
         ProcessBuilder processBuilder = new ProcessBuilder(inflateCommand.split(" "));
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
+        // connect to process streams
         BufferedReader outputBufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         BufferedReader errorBufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
@@ -74,6 +93,8 @@ public class FfmpegService {
 
         process.waitFor();
         if (process.exitValue() == 0) {
+            // processed successfully
+            // rewrite data to resource
             ResolutionDAO resolutionDAO = new ResolutionDAO();
             resolutionDAO.setWidth(resizeRequest.getWidth());
             resolutionDAO.setHeight(resizeRequest.getHeight());
@@ -85,6 +106,7 @@ public class FfmpegService {
                     )
             );
         } else {
+            // some error occurred
             throw new RuntimeException("Cannot convert file to given resolution, ffmpeg exit code in none-zero");
         }
     }

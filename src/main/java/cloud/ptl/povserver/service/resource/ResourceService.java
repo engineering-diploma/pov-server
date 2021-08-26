@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.IntStream;
 
+/**
+ * Everything we store in system is resource. It can be gif, picture or movie.
+ * This resource is used to manage resource entity
+ */
 @Service
 public class ResourceService {
     private final ResourceRepository resourceRepository;
@@ -39,6 +43,12 @@ public class ResourceService {
         this.resourceRepository.delete(resourceDAO);
     }
 
+    /**
+     * Resource is bounded to order value, which is used in queue component of ui. This method move resource one
+     * position up
+     *
+     * @param resourceDAO resource to move
+     */
     public void moveResourcesUp(ResourceDAO resourceDAO) {
         List<ResourceDAO> resources = (List<ResourceDAO>) this.resourceRepository.findAll();
         resources.sort(Comparator.comparingLong(ResourceDAO::getOrderr));
@@ -59,6 +69,12 @@ public class ResourceService {
         }
     }
 
+    /**
+     * Resource is bounded to order value, which is used in queue component of ui. This method move resource one
+     * position down
+     *
+     * @param resourceDAO resource to move down
+     */
     public void moveResourcesDown(ResourceDAO resourceDAO) {
         List<ResourceDAO> resources = (List<ResourceDAO>) this.resourceRepository.findAll();
         resources.sort(Comparator.comparingLong(ResourceDAO::getOrderr));
