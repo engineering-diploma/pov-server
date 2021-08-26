@@ -7,7 +7,8 @@ public enum MetricKeys {
     TOTAL_ROTATIONS("total_rotations"),
     LAST_MINUTE_ROTATIONS("last_minute_rotations"),
     DIODE_SWITCHES("diode_switches"),
-    FRAMES_DISPLAYED("frames_displayed");
+    FRAMES_DISPLAYED("frames_displayed"),
+    DATA_TRANSFERRED_TO_DISPLAY("data_transferred_to_display");
 
     @Getter
     private final String name;

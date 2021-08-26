@@ -149,8 +149,8 @@ public class MainComponent extends VerticalLayout {
         return new RippleClickableCard(item);
     }
 
-    private RippleClickableCard dataTransferredToDisplay() {
-        Float dataTransferred = this.metricsService.getDataTransferred();
+    private RippleClickableCard dataTransferredToDisplay() throws NotFoundException {
+        Float dataTransferred = this.metricsService.findByKey(MetricKeys.DATA_TRANSFERRED_TO_DISPLAY.getName()).getValue();
         String formatted = NumberFormatter.format(dataTransferred);
         Item item = new Item(formatted + " MB", "...is the data sent to display");
         return new RippleClickableCard(item);

@@ -4,6 +4,7 @@ import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.ffmpeg.FfmpegService;
 import cloud.ptl.povserver.ffmpeg.ResizeRequest;
+import cloud.ptl.povserver.service.metric.MetricsService;
 import cloud.ptl.povserver.service.resource.ResourceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileUrlResource;
@@ -25,10 +26,12 @@ public class StreamService {
     private static final long CHUNK_SIZE = 1000000L;
     private final ResourceService resourceService;
     private final FfmpegService ffmpegService;
+    private final MetricsService metricsService;
 
-    public StreamService(ResourceService resourceService, FfmpegService ffmpegService) {
+    public StreamService(ResourceService resourceService, FfmpegService ffmpegService, MetricsService metricsService) {
         this.resourceService = resourceService;
         this.ffmpegService = ffmpegService;
+        this.metricsService = metricsService;
     }
 
     public ResponseEntity<ResourceRegion> getVideoRegion(String rangeHeader, Long videoId) throws IOException, MalformedURLException, NotFoundException {
@@ -79,9 +82,11 @@ public class StreamService {
 
         if (fromRange > 0) {
             long rangeLength = min(CHUNK_SIZE, toRange - fromRange + 1);
+            this.metricsService.updateSendDataAmount((float) rangeLength / (1024F * 1024F));
             resourceRegion = new ResourceRegion(video, fromRange, rangeLength);
         } else {
             long rangeLength = min(CHUNK_SIZE, contentLength);
+            this.metricsService.updateSendDataAmount((float) rangeLength / (1024F * 1024F));
             resourceRegion = new ResourceRegion(video, 0, rangeLength);
         }
 
