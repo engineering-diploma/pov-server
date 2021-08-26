@@ -48,7 +48,7 @@ public class MetricsService {
      */
     public MetricDAO save(MetricDAO metricDAO) {
         MetricDAO metricDAO1 = this.metricRepository.save(metricDAO);
-        this.notifyAllCallbacks();
+        if (metricDAO.getKeyy().equals(MetricKeys.RPM.getName())) this.notifyAllCallbacks();
         return metricDAO1;
     }
 
