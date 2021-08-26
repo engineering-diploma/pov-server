@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * Each video stored in system can be converted into any resolution.
+ * This entity is used to store this information, so we do not have to re-convert it all around
+ */
 @Data
 @NoArgsConstructor
 @Entity

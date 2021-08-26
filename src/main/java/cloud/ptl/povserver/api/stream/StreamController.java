@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
+/**
+ * Controller used to stream videos into pov display
+ */
 @RestController
 @RequestMapping("/api")
 public class StreamController {
@@ -17,6 +20,15 @@ public class StreamController {
         this.streamService = streamService;
     }
 
+    /**
+     * Send video as is as binary stream
+     *
+     * @param range bytes to send
+     * @param id    id of video to display
+     * @return binary stream of video
+     * @throws NotFoundException if given video is not found
+     * @throws IOException       if video cannot be opened
+     */
     @GetMapping("/video/{id}")
     public ResponseEntity<ResourceRegion> getVideoStream(
             @RequestHeader(value = "Range", required = false) String range,
@@ -25,6 +37,18 @@ public class StreamController {
         return this.streamService.getVideoRegion(range, id);
     }
 
+    /**
+     * Resize video to given dimensions
+     *
+     * @param range  bytes to send
+     * @param id     id of video to send
+     * @param width  total width of vide
+     * @param height total height of video
+     * @return
+     * @throws NotFoundException
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @GetMapping("/video/resize/{id}")
     public ResponseEntity<ResourceRegion> getVideoStreamResized(
             @RequestHeader(value = "Range", required = false) String range,

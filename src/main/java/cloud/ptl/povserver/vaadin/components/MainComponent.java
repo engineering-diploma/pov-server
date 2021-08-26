@@ -1,9 +1,15 @@
 package cloud.ptl.povserver.vaadin.components;
 
+import cloud.ptl.povserver.exception.NotFoundException;
+import cloud.ptl.povserver.service.metric.MetricCallback;
+import cloud.ptl.povserver.service.metric.MetricKeys;
+import cloud.ptl.povserver.service.metric.MetricsService;
+import cloud.ptl.povserver.vaadin.utils.NumberFormatter;
 import com.github.appreciated.card.RippleClickableCard;
 import com.github.appreciated.card.content.HorizontalCardComponentContainer;
 import com.github.appreciated.card.content.Item;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Paragraph;
@@ -20,10 +26,31 @@ public class MainComponent extends VerticalLayout {
     private String angleSpeed;
     private String tangentialSpeed;
 
-    public MainComponent() {
+    private final MetricsService metricsService;
+    private final UI ui;
+
+    public MainComponent(MetricsService metricsService, UI ui) throws NotFoundException {
+        this.metricsService = metricsService;
+        this.ui = ui;
         add(this.createHead());
         add(this.createServerDescription());
         add(this.createMetrics());
+        this.registerToMetricCallback();
+    }
+
+    private void registerToMetricCallback() {
+        MetricCallback metricCallback = () -> ui.access(() -> {
+            getChildren()
+                    .filter(el -> el.getId().orElse("no").equals("metrics"))
+                    .findFirst()
+                    .ifPresent(this::remove);
+            try {
+                add(createMetrics());
+            } catch (NotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+        this.metricsService.registerCallback(metricCallback);
     }
 
     private Component createHead() {
@@ -50,8 +77,9 @@ public class MainComponent extends VerticalLayout {
         return vl;
     }
 
-    private Component createMetrics() {
+    private Component createMetrics() throws NotFoundException {
         VerticalLayout vl = new VerticalLayout();
+        vl.setId("metrics");
 
         HorizontalCardComponentContainer<RippleClickableCard> cardContainer1 = new HorizontalCardComponentContainer<>();
         cardContainer1.add(this.rotationPerMinute());
@@ -72,43 +100,59 @@ public class MainComponent extends VerticalLayout {
         return vl;
     }
 
-    private RippleClickableCard rotationPerMinute() {
-        Item item = new Item("325 RPM", "...is the number rotation per minute display is doing");
+    private RippleClickableCard rotationPerMinute() throws NotFoundException {
+        Float rpm = this.metricsService.findByKey(MetricKeys.RPM.getName()).getValue();
+        String formatted = NumberFormatter.format(rpm);
+        Item item = new Item(formatted + " RPM", "...is the number rotation per minute display is doing");
         return new RippleClickableCard(item);
     }
 
-    private RippleClickableCard totalRotations() {
-        Item item = new Item("234324324", "...is the rotation made since start");
+    private RippleClickableCard totalRotations() throws NotFoundException {
+        Float totalRotations = this.metricsService.findByKey(MetricKeys.TOTAL_ROTATIONS.getName()).getValue();
+        String formatted = NumberFormatter.format(totalRotations);
+        Item item = new Item(formatted, "...is the rotation made since start");
         return new RippleClickableCard(item);
     }
 
-    private RippleClickableCard rotationMadeInLastMinute() {
-        Item item = new Item("3242", "...is the number of rotations made in last minute");
+    private RippleClickableCard rotationMadeInLastMinute() throws NotFoundException {
+        Float lastMinuteRotations = this.metricsService.findByKey(MetricKeys.LAST_MINUTE_ROTATIONS.getName()).getValue();
+        String formatted = NumberFormatter.format(lastMinuteRotations);
+        Item item = new Item(formatted, "...is the number of rotations made in last minute");
         return new RippleClickableCard(item);
     }
 
-    private RippleClickableCard angleSpeed() {
-        Item item = new Item("21.1", "...is the angle speed");
+    private RippleClickableCard angleSpeed() throws NotFoundException {
+        Float angleSpeed = this.metricsService.getAngleSpeed();
+        String formatted = NumberFormatter.format(angleSpeed);
+        Item item = new Item(formatted + " deg/s", "...is the angle speed");
         return new RippleClickableCard(item);
     }
 
-    private RippleClickableCard tangentialSpeed() {
-        Item item = new Item("32.42", "...is the tangential speed");
+    private RippleClickableCard tangentialSpeed() throws NotFoundException {
+        Float tangentialSpeed = this.metricsService.getTangentialSpeed();
+        String formatted = NumberFormatter.format(tangentialSpeed);
+        Item item = new Item(formatted + " km/h", "...is the tangential speed");
         return new RippleClickableCard(item);
     }
 
-    private RippleClickableCard numberOfDiodeSwitched() {
-        Item item = new Item("32e4324", "...is the number of times we switched led");
+    private RippleClickableCard numberOfDiodeSwitched() throws NotFoundException {
+        Float diodeSwitches = this.metricsService.findByKey(MetricKeys.DIODE_SWITCHES.getName()).getValue();
+        String formatted = NumberFormatter.format(diodeSwitches);
+        Item item = new Item(formatted, "...is the number of times we switched led");
         return new RippleClickableCard(item);
     }
 
-    private RippleClickableCard framesDisplayed() {
-        Item item = new Item("324145", "...is the number of frames we displayed");
+    private RippleClickableCard framesDisplayed() throws NotFoundException {
+        Float framesDisplayed = this.metricsService.findByKey(MetricKeys.FRAMES_DISPLAYED.getName()).getValue();
+        String formatted = NumberFormatter.format(framesDisplayed);
+        Item item = new Item(formatted, "...is the number of frames we displayed");
         return new RippleClickableCard(item);
     }
 
-    private RippleClickableCard dataTransferredToDisplay() {
-        Item item = new Item("32 MB", "...is the data sent to display");
+    private RippleClickableCard dataTransferredToDisplay() throws NotFoundException {
+        Float dataTransferred = this.metricsService.findByKey(MetricKeys.DATA_TRANSFERRED_TO_DISPLAY.getName()).getValue();
+        String formatted = NumberFormatter.format(dataTransferred);
+        Item item = new Item(formatted + " MB", "...is the data sent to display");
         return new RippleClickableCard(item);
     }
 }
