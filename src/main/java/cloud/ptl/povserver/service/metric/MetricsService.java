@@ -2,6 +2,7 @@ package cloud.ptl.povserver.service.metric;
 
 import cloud.ptl.povserver.data.model.MetricDAO;
 import cloud.ptl.povserver.data.repositories.MetricRepository;
+import cloud.ptl.povserver.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,12 @@ public class MetricsService {
         MetricDAO metricDAO1 = this.metricRepository.save(metricDAO);
         this.notifyAllCallbacks();
         return metricDAO1;
+    }
+
+    public MetricDAO findByKey(String key) throws NotFoundException {
+        Optional<MetricDAO> optionalMetric = this.metricRepository.findByKeyy(key);
+        if (optionalMetric.isEmpty()) throw new NotFoundException("Metric with key: " + key + " not found");
+        else return optionalMetric.get();
     }
 
     public List<MetricDAO> getAllRPMMetrics() {
