@@ -1,8 +1,11 @@
 spring:
+#  datasource:
+  #    password: ${DB_PASSWORD}
+  #    username: ${DB_USERNAME}
+  #    url: ${DB_URL}
   datasource:
-    password: ${DB_PASSWORD}
-    username: ${DB_USERNAME}
-    url: ${DB_URL}
+    username: "sa"
+    url: "jdbc:h2:file:./main"
 
 ptl:
   rabbit:
