@@ -20,6 +20,9 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * Service used to download youtube movies
+ */
 @Service
 public class DownloadService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -49,12 +52,24 @@ public class DownloadService {
         this.gifConvertedDir = new File(this.convertedGifPath);
     }
 
+    /**
+     * Fetch info from youtube
+     *
+     * @param videoId id of movie which is in youtube url
+     * @return VideoInfo object
+     */
     public VideoInfo getVideoInfo(String videoId) {
         RequestVideoInfo request = new RequestVideoInfo(videoId);
         Response<VideoInfo> response = youtubeDownloader.getVideoInfo(request);
         return response.data();
     }
 
+    /**
+     * Synchronous download of youtube video
+     *
+     * @param videoId          id of video present in youtube link
+     * @param downloadCallback callback to call after download compete
+     */
     public void downloadYoutubeVideo(String videoId, DownloadCallback downloadCallback) {
         VideoInfo videoInfo = this.getVideoInfo(videoId);
         Format format = videoInfo.bestVideoFormat();

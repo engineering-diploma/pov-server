@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
+/**
+ * Service used to control queue component of vaadin interface
+ */
 @Service
 public class QueueService {
     private ResourceService resourceService;
