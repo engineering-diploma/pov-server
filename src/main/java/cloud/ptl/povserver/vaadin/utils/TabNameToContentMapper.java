@@ -11,6 +11,8 @@ import cloud.ptl.povserver.vaadin.components.QueueComponent;
 import cloud.ptl.povserver.vaadin.components.SearchComponent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,7 +23,10 @@ import java.util.stream.Stream;
  */
 public class TabNameToContentMapper {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final Map<String, Component> mappings;
+    public static String lastMappedComponent;
 
     public TabNameToContentMapper(SearchService searchService, UI ui, QueueService queueService, ResourceService resourceService, RabbitSender rabbitSender, MetricsService metricsService) throws NotFoundException {
         QueueComponent queueComponent = new QueueComponent(queueService, ui, rabbitSender);
@@ -38,9 +43,13 @@ public class TabNameToContentMapper {
                 {"Home", mainComponent},
                 {"Queue", queueComponent}
         }).collect(Collectors.toMap(d -> (String) d[0], d -> (Component) d[1]));
+        TabNameToContentMapper.lastMappedComponent = "None";
+        this.logger.info("Initialized tab mapper");
     }
 
     public Component toContent(String tabName) {
+        this.logger.info("Changing tab to " + tabName);
+        TabNameToContentMapper.lastMappedComponent = tabName;
         return this.mappings.get(tabName);
     }
 }
