@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 public class TabNameToContentMapper {
 
     private final Map<String, Component> mappings;
+    public static String lastMappedComponent;
 
     public TabNameToContentMapper(SearchService searchService, UI ui, QueueService queueService, ResourceService resourceService, RabbitSender rabbitSender, MetricsService metricsService) throws NotFoundException {
         QueueComponent queueComponent = new QueueComponent(queueService, ui, rabbitSender);
@@ -38,9 +39,11 @@ public class TabNameToContentMapper {
                 {"Home", mainComponent},
                 {"Queue", queueComponent}
         }).collect(Collectors.toMap(d -> (String) d[0], d -> (Component) d[1]));
+        TabNameToContentMapper.lastMappedComponent = "None";
     }
 
     public Component toContent(String tabName) {
+        TabNameToContentMapper.lastMappedComponent = tabName;
         return this.mappings.get(tabName);
     }
 }
