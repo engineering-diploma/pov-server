@@ -59,6 +59,7 @@ public class DownloadService {
      * @return VideoInfo object
      */
     public VideoInfo getVideoInfo(String videoId) {
+        this.logger.info("Fetching vide info -> id: " + videoId);
         RequestVideoInfo request = new RequestVideoInfo(videoId);
         Response<VideoInfo> response = youtubeDownloader.getVideoInfo(request);
         return response.data();
