@@ -5,6 +5,7 @@ import cloud.ptl.povserver.service.metric.MetricCallback;
 import cloud.ptl.povserver.service.metric.MetricKeys;
 import cloud.ptl.povserver.service.metric.MetricsService;
 import cloud.ptl.povserver.vaadin.utils.NumberFormatter;
+import cloud.ptl.povserver.vaadin.utils.TabNameToContentMapper;
 import com.github.appreciated.card.RippleClickableCard;
 import com.github.appreciated.card.content.HorizontalCardComponentContainer;
 import com.github.appreciated.card.content.Item;
@@ -39,17 +40,21 @@ public class MainComponent extends VerticalLayout {
     }
 
     private void registerToMetricCallback() {
-        MetricCallback metricCallback = () -> ui.access(() -> {
-            getChildren()
-                    .filter(el -> el.getId().orElse("no").equals("metrics"))
-                    .findFirst()
-                    .ifPresent(this::remove);
-            try {
-                add(createMetrics());
-            } catch (NotFoundException e) {
-                e.printStackTrace();
+        MetricCallback metricCallback = () -> {
+            if (TabNameToContentMapper.lastMappedComponent.equals("Home")) {
+                ui.access(() -> {
+                    getChildren()
+                            .filter(el -> el.getId().orElse("no").equals("metrics"))
+                            .findFirst()
+                            .ifPresent(this::remove);
+                    try {
+                        add(createMetrics());
+                    } catch (NotFoundException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
-        });
+        };
         this.metricsService.registerCallback(metricCallback);
     }
 
