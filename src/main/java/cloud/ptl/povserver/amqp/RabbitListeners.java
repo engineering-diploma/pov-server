@@ -4,6 +4,8 @@ import cloud.ptl.povserver.amqp.message.MetricMessage;
 import cloud.ptl.povserver.data.model.MetricDAO;
 import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.service.metric.MetricsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component;
 public class RabbitListeners {
 
     private final MetricsService metricsService;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public RabbitListeners(MetricsService metricsService) {
         this.metricsService = metricsService;
@@ -42,6 +45,7 @@ public class RabbitListeners {
     )
     public void displayControlListener(@Payload MetricMessage message) {
         // here we would like to update message or create new if any exists
+        this.logger.info("Received message: " + message.toString());
         MetricDAO metricDAO = null;
         try {
             metricDAO = this.metricsService.findByKey(message.getKey());
