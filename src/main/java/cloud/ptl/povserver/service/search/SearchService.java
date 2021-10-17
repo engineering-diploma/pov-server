@@ -2,7 +2,7 @@ package cloud.ptl.povserver.service.search;
 
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.service.download.DownloadCallback;
-import cloud.ptl.povserver.service.download.DownloadService;
+import cloud.ptl.povserver.service.download.YTDownloadService;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -13,9 +13,9 @@ import java.util.Arrays;
 @Service
 public class SearchService {
 
-    private final DownloadService downloadService;
+    private final YTDownloadService downloadService;
 
-    public SearchService(DownloadService downloadService) {
+    public SearchService(YTDownloadService downloadService) {
         this.downloadService = downloadService;
     }
 
@@ -67,7 +67,7 @@ public class SearchService {
      * @param downloadCallback callback to call after download
      */
     private void findYoutubeMovie(String link, DownloadCallback downloadCallback) {
-        this.downloadService.downloadYoutubeVideo(
+        this.downloadService.download(
                 this.extractVideoId(link), downloadCallback
         );
     }
