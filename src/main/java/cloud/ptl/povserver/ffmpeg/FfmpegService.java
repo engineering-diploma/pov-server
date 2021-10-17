@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * Service is used to call external program to convert vide into other formats.
+ * ffmpeg -i earth.gif -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -s 476x280 out.webm
  */
 @Service
 public class FfmpegService {
