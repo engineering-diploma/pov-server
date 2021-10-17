@@ -1,7 +1,7 @@
 package cloud.ptl.povserver.service.search;
 
-import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.service.download.DownloadCallback;
+import cloud.ptl.povserver.service.download.GIFDownloadService;
 import cloud.ptl.povserver.service.download.YTDownloadService;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +14,15 @@ import java.util.Arrays;
 public class SearchService {
 
     private final YTDownloadService downloadService;
+    private final GIFDownloadService gifDownloadService;
 
-    public SearchService(YTDownloadService downloadService) {
+    public SearchService(YTDownloadService downloadService, GIFDownloadService gifDownloadService) {
         this.downloadService = downloadService;
+        this.gifDownloadService = gifDownloadService;
     }
 
-    public void findResourceByLink(String link, DownloadCallback downloadCallback) {
-        if (isGif(link)) this.findGif(link);
+    public void findResourceByLink(String link, DownloadCallback downloadCallback) throws Exception {
+        if (isGif(link)) this.findGif(link, downloadCallback);
         else if (isYoutubeLink(link)) this.findYoutubeMovie(link, downloadCallback);
         else
             throw new IllegalArgumentException("Link " + link + " cannot be downloaded as source is not supported by download service");
@@ -52,12 +54,11 @@ public class SearchService {
     /**
      * method used to download gif from internet
      *
-     * @param link
-     * @return
+     * @param link             link under which gif is
+     * @param downloadCallback callbacks to call after and during download
      */
-    private ResourceDAO findGif(String link) {
-        // TODO: implement
-        return null;
+    private void findGif(String link, DownloadCallback downloadCallback) throws Exception {
+        this.gifDownloadService.download(link, downloadCallback);
     }
 
     /**
