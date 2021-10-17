@@ -9,6 +9,7 @@ import com.github.appreciated.card.content.Item;
 import com.github.appreciated.card.content.VerticalCardComponentContainer;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
@@ -41,7 +42,8 @@ public class QueueComponent extends VerticalLayout {
     private RippleClickableCard createCard(ResourceDAO resourceDAO) {
         HorizontalLayout hl = new HorizontalLayout();
         Item item = new Item(resourceDAO.getTitle(), resourceDAO.getDescription());
-        Image image = new Image(resourceDAO.getThumbnailUrls().get(1), "an image");
+        Image image = new Image(resourceDAO.getThumbnailUrls().get(0), "an image");
+        image.setMaxWidth(200, Unit.PIXELS);
         hl.add(image);
         hl.add(item);
         RippleClickableCard rippleClickableCard = new RippleClickableCard(hl);
