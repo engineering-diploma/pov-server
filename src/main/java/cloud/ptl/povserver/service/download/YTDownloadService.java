@@ -41,6 +41,7 @@ public class YTDownloadService implements DownloadService {
     @PostConstruct
     private void init() {
         this.youtubeDownloadDir = new File(this.youtubeDownloadPath);
+        this.youtubeDownloadDir.mkdir();
     }
 
     /**
