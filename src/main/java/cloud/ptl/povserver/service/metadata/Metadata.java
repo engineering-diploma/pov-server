@@ -9,11 +9,10 @@ public class Metadata {
     private String title;
     private String description;
     private String downloadUrl;
-    private Integer duration;
+    private Double duration;
     private Integer height;
     private Integer width;
-    private Integer frameRate;
-    private String systemFormat;
+    private Double frameRate;
     private String ffmpegFormat;
     private String codec;
 }
