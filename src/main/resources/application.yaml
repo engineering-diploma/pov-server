@@ -14,8 +14,8 @@ logging:
 ptl:
   download:
     youtube: "youtube-movies"
-    gif: "gif"
-    gif_converted: "gif-movie"
+    raw: "raw"
+    converted: "converted"
 
   display:
     diameter: 20
