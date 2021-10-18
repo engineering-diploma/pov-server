@@ -81,50 +81,57 @@ public class YTDownloadService implements DownloadService {
      */
     @Override
     public void download(String link, DownloadCallback downloadCallback) {
-        String videoId = this.extractVideoId(link);
-        VideoInfo videoInfo = this.getVideoInfo(videoId);
-        Format format = videoInfo.bestVideoFormat();
-        RequestVideoFileDownload request = new RequestVideoFileDownload(format)
-                .callback(new YoutubeProgressCallback<File>() {
-                    @Override
-                    public void onDownloading(int i) {
-                        downloadCallback.onDownload(i);
-                        logger.info("Downloading... " + i + "%");
-                    }
+        if (!this.resourceService.existByDownloadUrl(link)) {
+            String videoId = this.extractVideoId(link);
+            VideoInfo videoInfo = this.getVideoInfo(videoId);
+            Format format = videoInfo.bestVideoFormat();
+            RequestVideoFileDownload request = new RequestVideoFileDownload(format)
+                    .callback(new YoutubeProgressCallback<File>() {
+                        @Override
+                        public void onDownloading(int i) {
+                            downloadCallback.onDownload(i);
+                            logger.info("Downloading... " + i + "%");
+                        }
 
-                    @Override
-                    public void onFinished(File file) {
-                        ResourceDAO resourceDAO = new ResourceDAO();
-                        resourceDAO.setDescription(
-                                videoInfo.details().description()
-                        );
-                        resourceDAO.setThumbnailUrls(videoInfo.details().thumbnails());
-                        resourceDAO.setMovie(file);
-                        resourceDAO.setIsMovie(true);
-                        resourceDAO.setTitle(videoInfo.details().title());
-                        resourceDAO.setResolutions(new ArrayList<>());
-                        resourceDAO.setDownloadUrl(link);
-                        ResolutionDAO resolutionDAO = new ResolutionDAO();
-                        resolutionDAO.setWidth(videoInfo.bestVideoFormat().width());
-                        resolutionDAO.setHeight(videoInfo.bestVideoFormat().height());
-                        resolutionDAO = resolutionService.save(resolutionDAO);
-                        resourceDAO.getResolutions().add(resolutionDAO);
-                        resourceDAO = resourceService.save(resourceDAO);
-                        downloadCallback.onFinished(resourceDAO);
-                        logger.info("Download complete");
-                    }
+                        @Override
+                        public void onFinished(File file) {
+                            ResourceDAO resourceDAO = new ResourceDAO();
+                            resourceDAO.setDescription(
+                                    videoInfo.details().description()
+                            );
+                            resourceDAO.setThumbnailUrls(videoInfo.details().thumbnails());
+                            resourceDAO.setMovie(file);
+                            resourceDAO.setIsMovie(true);
+                            resourceDAO.setTitle(videoInfo.details().title());
+                            resourceDAO.setResolutions(new ArrayList<>());
+                            resourceDAO.setDownloadUrl(link);
+                            ResolutionDAO resolutionDAO = new ResolutionDAO();
+                            resolutionDAO.setWidth(videoInfo.bestVideoFormat().width());
+                            resolutionDAO.setHeight(videoInfo.bestVideoFormat().height());
+                            resolutionDAO = resolutionService.save(resolutionDAO);
+                            resourceDAO.getResolutions().add(resolutionDAO);
+                            resourceDAO = resourceService.save(resourceDAO);
+                            downloadCallback.onFinished(resourceDAO);
+                            logger.info("Download complete");
+                        }
 
-                    @Override
-                    public void onError(Throwable throwable) {
-                        downloadCallback.onError(throwable);
-                    }
-                })
-                .saveTo(this.youtubeDownloadDir)
-                .renameTo(videoInfo.details().title().replace(" ", "_"))
-                .async();
-        //RequestVideoFileDownload request = new RequestVideoFileDownload(format);
-        Response<File> response = this.youtubeDownloader.downloadVideoFile(request);
+                        @Override
+                        public void onError(Throwable throwable) {
+                            downloadCallback.onError(throwable);
+                        }
+                    })
+                    .saveTo(this.youtubeDownloadDir)
+                    .renameTo(videoInfo.details().title().replace(" ", "_"))
+                    .async();
+            //RequestVideoFileDownload request = new RequestVideoFileDownload(format);
+            Response<File> response = this.youtubeDownloader.downloadVideoFile(request);
 //        response.data();
+        } else {
+            downloadCallback.onDownload(100);
+            downloadCallback.onFinished(
+                    this.resourceService.findByDownloadUrl(link).get()
+            );
+        }
 
     }
 }
