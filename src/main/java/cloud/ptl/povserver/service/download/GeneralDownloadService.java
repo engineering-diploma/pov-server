@@ -46,14 +46,21 @@ public class GeneralDownloadService implements DownloadService {
     public void download(String locator, DownloadCallback downloadCallback) throws Exception {
         this.downloadFromURL(locator);
         downloadCallback.onDownload(100);
-        ResourceDAO converted =
-                this.convert(
-                        locator
-                );
-        converted.setThumbnailUrls(List.of(locator));
-        converted =
-                this.resourceService.save(converted);
-        downloadCallback.onFinished(converted);
+        if (!this.resourceService.existByDownloadUrl(locator)) {
+            ResourceDAO converted =
+                    this.convert(
+                            locator
+                    );
+            converted.setThumbnailUrls(List.of(locator));
+            converted.setDownloadUrl(locator);
+            converted =
+                    this.resourceService.save(converted);
+            downloadCallback.onFinished(converted);
+        } else {
+            downloadCallback.onFinished(
+                    this.resourceService.findByDownloadUrl(locator).get()
+            );
+        }
     }
 
     private void downloadFromURL(String locator) throws Exception {
