@@ -32,7 +32,7 @@ public class MetadataService {
         metadata.setDescription(resourceDAO.getDescription());
         metadata.setHeight(stream.height);
         metadata.setWidth(stream.width);
-        metadata.setDuration(stream.duration);
+        metadata.setDuration(format.duration);
         metadata.setDownloadUrl(resourceDAO.getDownloadUrl());
         metadata.setFfmpegFormat(format.format_long_name);
         metadata.setFrameRate(stream.avg_frame_rate.doubleValue());
