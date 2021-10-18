@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 public class GifToWebMConverter implements ResourceConverter {
     private final String FFMPEG_CONVERT_COMMAND =
-            "/usr/bin/ffmpeg -i %s -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -s %dx%d %s.webm";
+            "/usr/bin/ffmpeg -y -i %s -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -s %dx%d %s.webm";
 
     private final ResolutionService resolutionService;
     private final ResourceService resourceService;
