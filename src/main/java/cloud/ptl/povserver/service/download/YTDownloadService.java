@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Service used to download youtube movies
@@ -57,13 +58,30 @@ public class YTDownloadService implements DownloadService {
     }
 
     /**
+     * Extracts video id from youtube link.
+     * Id is store in v path variable
+     *
+     * @param link link from which we should extract video
+     * @return extracted id
+     */
+    private String extractVideoId(String link) {
+        String pathAttributesString = link.split("\\?")[1];
+        String[] pathAttributes = pathAttributesString.split("&");
+        String vAttribute = Arrays.stream(pathAttributes).sequential()
+                .filter(el -> el.split("=")[0].equals("v"))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Missing argument v in url"));
+        return vAttribute.split("=")[1];
+    }
+
+    /**
      * Synchronous download of youtube video
      *
-     * @param videoId          id of video present in youtube link
+     * @param link             link of video present in youtube
      * @param downloadCallback callback to call after download compete
      */
     @Override
-    public void download(String videoId, DownloadCallback downloadCallback) {
+    public void download(String link, DownloadCallback downloadCallback) {
+        String videoId = this.extractVideoId(link);
         VideoInfo videoInfo = this.getVideoInfo(videoId);
         Format format = videoInfo.bestVideoFormat();
         RequestVideoFileDownload request = new RequestVideoFileDownload(format)
