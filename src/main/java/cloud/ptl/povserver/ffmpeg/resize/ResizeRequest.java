@@ -1,4 +1,4 @@
-package cloud.ptl.povserver.ffmpeg;
+package cloud.ptl.povserver.ffmpeg.resize;
 
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import lombok.Data;
