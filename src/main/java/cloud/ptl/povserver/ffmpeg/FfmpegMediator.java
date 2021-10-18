@@ -17,11 +17,11 @@ import java.io.IOException;
  */
 @Service
 @Slf4j
-public class FfmpegService {
+public class FfmpegMediator {
     private final ResizeService resizeService;
     private final FormatConverter formatConverter;
 
-    public FfmpegService(ResizeService resizeService, FormatConverter formatConverter) {
+    public FfmpegMediator(ResizeService resizeService, FormatConverter formatConverter) {
         this.resizeService = resizeService;
         this.formatConverter = formatConverter;
     }
@@ -39,6 +39,19 @@ public class FfmpegService {
 
     public ResourceDAO convert(ConvertRequest convertRequest) throws IOException, InterruptedException {
         return this.formatConverter.convert(convertRequest);
+    }
+
+    public static ConvertRequest.Format findFormat(String locator) {
+        if (locator.endsWith(".gif")) return ConvertRequest.Format.GIF;
+        else if (locator.endsWith(".mp4")) return ConvertRequest.Format.MP4;
+        else throw new IllegalArgumentException(
+                    String.format(
+                            "Unrecognized file format: %s",
+                            locator.substring(
+                                    locator.lastIndexOf(".")
+                            )
+                    )
+            );
     }
 
 }
