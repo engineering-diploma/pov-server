@@ -50,6 +50,9 @@ public class ResourceDAO {
     )
     private List<ResolutionDAO> resolutions;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String downloadUrl;
+
     @PostPersist
     public void post() {
         // this is the only simple and declarative method to create sequence of exclusive numbers
