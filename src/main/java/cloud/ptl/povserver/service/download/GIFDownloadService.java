@@ -1,8 +1,8 @@
 package cloud.ptl.povserver.service.download;
 
 import cloud.ptl.povserver.data.model.ResourceDAO;
-import cloud.ptl.povserver.ffmpeg.ConvertRequest;
 import cloud.ptl.povserver.ffmpeg.FfmpegService;
+import cloud.ptl.povserver.ffmpeg.convert.ConvertRequest;
 import cloud.ptl.povserver.service.resource.ResolutionService;
 import cloud.ptl.povserver.service.resource.ResourceService;
 import org.atmosphere.util.StringEscapeUtils;
@@ -23,7 +23,6 @@ public class GIFDownloadService implements DownloadService {
 
     private final String DOWNLOAD_COMMAND = "ffmpeg -i %s -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -s %sx%s %s";
 
-    private final ResolutionService resolutionService;
     private final ResourceService resourceService;
     private final FfmpegService ffmpegService;
 
@@ -36,7 +35,6 @@ public class GIFDownloadService implements DownloadService {
     private String convertedGifPath;
 
     public GIFDownloadService(ResolutionService resolutionService, ResourceService resourceService, FfmpegService ffmpegService) {
-        this.resolutionService = resolutionService;
         this.resourceService = resourceService;
         this.ffmpegService = ffmpegService;
     }
@@ -86,7 +84,8 @@ public class GIFDownloadService implements DownloadService {
         ConvertRequest convertRequest = new ConvertRequest();
         convertRequest.setFileToConvert(fileToConvert);
         convertRequest.setDestinationFolder(this.gifConvertedDir);
-        return this.ffmpegService.convertGifToWebM(convertRequest);
+        convertRequest.setSourceFormat(ConvertRequest.Format.GIF);
+        return this.ffmpegService.convert(convertRequest);
     }
 
     private String fileNameExtractor(String url) throws Exception {
