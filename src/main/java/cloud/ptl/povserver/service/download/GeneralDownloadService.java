@@ -1,9 +1,8 @@
 package cloud.ptl.povserver.service.download;
 
 import cloud.ptl.povserver.data.model.ResourceDAO;
-import cloud.ptl.povserver.ffmpeg.FfmpegService;
+import cloud.ptl.povserver.ffmpeg.FfmpegMediator;
 import cloud.ptl.povserver.ffmpeg.convert.ConvertRequest;
-import cloud.ptl.povserver.service.resource.ResolutionService;
 import cloud.ptl.povserver.service.resource.ResourceService;
 import org.atmosphere.util.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,38 +12,34 @@ import javax.annotation.PostConstruct;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
 @Service
-public class GIFDownloadService implements DownloadService {
-
-    private final String DOWNLOAD_COMMAND = "ffmpeg -i %s -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -s %sx%s %s";
-
+public class GeneralDownloadService implements DownloadService {
     private final ResourceService resourceService;
-    private final FfmpegService ffmpegService;
+    private final FfmpegMediator ffmpegService;
 
-    private File gifDownloadDir;
-    private File gifConvertedDir;
+    private File downloadDir;
+    private File convertedDir;
 
-    @Value("${ptl.download.gif}")
-    private String gifDownloadPath;
-    @Value("${ptl.download.gif_converted}")
-    private String convertedGifPath;
+    @Value("${ptl.download.raw}")
+    private String downloadPath;
+    @Value("${ptl.download.converted}")
+    private String convertedPath;
 
-    public GIFDownloadService(ResolutionService resolutionService, ResourceService resourceService, FfmpegService ffmpegService) {
+    public GeneralDownloadService(ResourceService resourceService, FfmpegMediator ffmpegService) {
         this.resourceService = resourceService;
         this.ffmpegService = ffmpegService;
     }
 
     @PostConstruct
     public void init() {
-        this.gifDownloadDir = new File(this.gifDownloadPath);
-        this.gifDownloadDir.mkdir();
-        this.gifConvertedDir = new File(this.convertedGifPath);
-        this.gifConvertedDir.mkdir();
+        this.downloadDir = new File(this.downloadPath);
+        this.downloadDir.mkdir();
+        this.convertedDir = new File(this.convertedPath);
+        this.convertedDir.mkdir();
     }
 
     @Override
@@ -53,7 +48,7 @@ public class GIFDownloadService implements DownloadService {
         downloadCallback.onDownload(100);
         ResourceDAO converted =
                 this.convert(
-                        this.fileNameExtractor(locator)
+                        locator
                 );
         converted.setThumbnailUrls(List.of(locator));
         converted =
@@ -70,7 +65,7 @@ public class GIFDownloadService implements DownloadService {
 
         FileOutputStream fo =
                 new FileOutputStream(
-                        this.gifDownloadPath + File.separator + this.fileNameExtractor(url)
+                        this.downloadPath + File.separator + this.fileNameExtractor(url)
                 );
         while (-1 != di.read(b, 0, 1))
             fo.write(b, 0, 1);
@@ -78,20 +73,21 @@ public class GIFDownloadService implements DownloadService {
         fo.close();
     }
 
-    private ResourceDAO convert(String fileName) throws IOException, InterruptedException {
+    private ResourceDAO convert(String locator) throws Exception {
+        String fileName = this.fileNameExtractor(locator);
         File fileToConvert = new File(
-                this.gifDownloadPath + File.separator + fileName);
+                this.downloadPath + File.separator + fileName);
         ConvertRequest convertRequest = new ConvertRequest();
         convertRequest.setFileToConvert(fileToConvert);
-        convertRequest.setDestinationFolder(this.gifConvertedDir);
-        convertRequest.setSourceFormat(ConvertRequest.Format.GIF);
+        convertRequest.setDestinationFolder(this.convertedDir);
+        convertRequest.setSourceFormat(
+                FfmpegMediator.findFormat(locator)
+        );
         return this.ffmpegService.convert(convertRequest);
     }
 
     private String fileNameExtractor(String url) throws Exception {
-
-        if (url.endsWith(".gif")) return StringEscapeUtils.escapeJava(url).replace("/", "__");
-        else return StringEscapeUtils.escapeJava(url + ".gif").replace("/", "__");
+        return StringEscapeUtils.escapeJava(url).replace("/", "__");
     }
 
     private String fileNameExtractor(URL url) throws Exception {
