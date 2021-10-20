@@ -43,6 +43,14 @@ public class ResourceService {
         this.resourceRepository.delete(resourceDAO);
     }
 
+    public boolean existByDownloadUrl(String donwloadUrl) {
+        return this.resourceRepository.existsByDownloadUrl(donwloadUrl);
+    }
+
+    public Optional<ResourceDAO> findByDownloadUrl(String url) {
+        return this.resourceRepository.findByDownloadUrl(url);
+    }
+
     /**
      * Resource is bounded to order value, which is used in queue component of ui. This method move resource one
      * position up

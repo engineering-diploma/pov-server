@@ -49,7 +49,7 @@ public class RabbitMQConfig {
     public RabbitTemplate rabbitTemplate() throws NoSuchAlgorithmException, KeyManagementException {
         RabbitTemplate rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.setConnectionFactory(this.connectionFactory());
-        // rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
         return rabbitTemplate;
     }
 

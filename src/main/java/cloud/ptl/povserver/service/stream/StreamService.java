@@ -2,8 +2,8 @@ package cloud.ptl.povserver.service.stream;
 
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.exception.NotFoundException;
-import cloud.ptl.povserver.ffmpeg.FfmpegService;
-import cloud.ptl.povserver.ffmpeg.ResizeRequest;
+import cloud.ptl.povserver.ffmpeg.FfmpegMediator;
+import cloud.ptl.povserver.ffmpeg.resize.ResizeRequest;
 import cloud.ptl.povserver.service.metric.MetricsService;
 import cloud.ptl.povserver.service.resource.ResourceService;
 import org.apache.commons.lang3.StringUtils;
@@ -28,10 +28,10 @@ import static java.lang.Math.min;
 public class StreamService {
     private static final long CHUNK_SIZE = 1000000L;
     private final ResourceService resourceService;
-    private final FfmpegService ffmpegService;
+    private final FfmpegMediator ffmpegService;
     private final MetricsService metricsService;
 
-    public StreamService(ResourceService resourceService, FfmpegService ffmpegService, MetricsService metricsService) {
+    public StreamService(ResourceService resourceService, FfmpegMediator ffmpegService, MetricsService metricsService) {
         this.resourceService = resourceService;
         this.ffmpegService = ffmpegService;
         this.metricsService = metricsService;

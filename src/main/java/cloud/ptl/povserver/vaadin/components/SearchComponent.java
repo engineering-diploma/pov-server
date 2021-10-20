@@ -12,6 +12,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
@@ -77,12 +78,6 @@ public class SearchComponent extends VerticalLayout {
         hl.add(image);
         hl.add(item);
         RippleClickableCard rippleClickableCard = new RippleClickableCard(hl);
-//        ContextMenu contextMenu = new ContextMenu();
-//        contextMenu.setTarget(rippleClickableCard);
-//        contextMenu.addItem("Delete", e -> Notification.show("Deleted"));
-//        contextMenu.addItem("Move Up", e -> Notification.show("Move up"));
-//        contextMenu.addItem("Move Down", e -> Notification.show("Moved Down"));
-//        add(contextMenu);
         rippleClickableCard.setId("result-card");
         return rippleClickableCard;
     }
@@ -91,39 +86,44 @@ public class SearchComponent extends VerticalLayout {
         this.progressLabel.setText("Starting download...");
         this.progressBar.setValue(10);
         String link = this.searchTextField.getValue();
-        this.searchService.findResourceByLink(link, new DownloadCallback() {
-            @Override
-            public void onDownload(int progress) {
-                float progressPercent = (float) progress / 100;
-                ui.access(() -> {
-                    progressBar.setValue(10 + 80 * progressPercent);
-                    progressLabel.setText("Dwonloading... " + progress + "%");
-                });
-            }
+        try {
+            this.searchService.findResourceByLink(link, new DownloadCallback() {
+                @Override
+                public void onDownload(int progress) {
+                    float progressPercent = (float) progress / 100;
+                    ui.access(() -> {
+                        progressBar.setValue(10 + 80 * progressPercent);
+                        progressLabel.setText("Dwonloading... " + progress + "%");
+                    });
+                }
 
-            @Override
-            public void onFinished(ResourceDAO resourceDAO) {
-                ui.access(() -> {
-                    progressLabel.setText("Finished");
-                    progressBar.setValue(100);
-                    getChildren()
-                            .filter(el -> el.getId().orElse("false").equals("result-card"))
-                            .findFirst()
-                            .ifPresent(component -> remove(component));
-                    ;
+                @Override
+                public void onFinished(ResourceDAO resourceDAO) {
+                    ui.access(() -> {
+                        progressLabel.setText("Finished");
+                        progressBar.setValue(100);
+                        getChildren()
+                                .filter(el -> el.getId().orElse("false").equals("result-card"))
+                                .findFirst()
+                                .ifPresent(component -> remove(component));
+                        ;
 
-                    add(createCard(resourceDAO));
-                    searchComponentListener.onUpdate();
-                });
-            }
+                        add(createCard(resourceDAO));
+                        searchComponentListener.onUpdate();
+                    });
+                }
 
-            @Override
-            public void onError(Throwable throwable) {
-                ui.access(() -> {
-                    progressBar.setValue(0);
-                    progressLabel.setText("Error occurred");
-                });
-            }
-        });
+                @Override
+                public void onError(Throwable throwable) {
+                    ui.access(() -> {
+                        progressBar.setValue(0);
+                        progressLabel.setText("Error occurred");
+                    });
+                }
+            });
+        } catch (Exception e) {
+            Notification.show("Something wrong happen during download: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

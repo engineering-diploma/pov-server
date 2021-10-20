@@ -1,13 +1,10 @@
-package cloud.ptl.povserver.ffmpeg;
-
-// ffmpeg -i 'I made Brett do this....webm' -s 1280x720 -vcodec libx265 'I made Brett do this...1280x720.mp4'
+package cloud.ptl.povserver.ffmpeg.resize;
 
 import cloud.ptl.povserver.data.model.ResolutionDAO;
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.service.resource.ResolutionService;
 import cloud.ptl.povserver.service.resource.ResourceService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -16,29 +13,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-/**
- * Service is used to call external program to convert vide into other formats.
- */
 @Service
-public class FfmpegService {
+@Slf4j
+public class ResizeService {
     private final String FFMPEG_RESIZE_COMMAND =
             "/usr/bin/ffmpeg -i %s -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -s %dx%d %s%dx%d.webm";
-    private final Logger logger = LoggerFactory.getLogger(FfmpegService.class);
     private final ResourceService resourceService;
     private final ResolutionService resolutionService;
 
-    public FfmpegService(ResourceService resourceService, ResolutionService resolutionService) {
+    public ResizeService(ResourceService resourceService, ResolutionService resolutionService) {
         this.resourceService = resourceService;
         this.resolutionService = resolutionService;
     }
 
-    /**
-     * Resize given resource into given format
-     *
-     * @param resizeRequest request containing all information to conduct resizing
-     * @return resized resource
-     * @throws IOException if file cannot be found
-     */
     public ResourceDAO resize(ResizeRequest resizeRequest) throws IOException, InterruptedException {
         List<ResolutionDAO> availableResolutions = resizeRequest.getResourceDAO().getResolutions();
         // checking if conversion was made before
@@ -48,7 +35,7 @@ public class FfmpegService {
                                 el.getHeight() == resizeRequest.getHeight() && el.getWidth() == resizeRequest.getWidth()
                         );
         if (!alreadyContains) {
-            this.callFFMPEG(resizeRequest);
+            this.callFFMPEGtoResize(resizeRequest);
         }
         // update path to newly created resource
         String newPath = resizeRequest.getResourceDAO().getMovie().getAbsolutePath();
@@ -64,7 +51,7 @@ public class FfmpegService {
      * @param resizeRequest request containing all needed informations to conduct resizing
      * @throws IOException thrown if resize cannot be done, because file was not found
      */
-    private void callFFMPEG(ResizeRequest resizeRequest) throws IOException, InterruptedException {
+    private void callFFMPEGtoResize(ResizeRequest resizeRequest) throws IOException, InterruptedException {
         String inflateCommand =
                 String.format(
                         this.FFMPEG_RESIZE_COMMAND,
@@ -85,10 +72,10 @@ public class FfmpegService {
         String line;
 
         while ((line = outputBufferedReader.readLine()) != null) {
-            this.logger.info(line);
+            log.info(line);
         }
         while ((line = errorBufferedReader.readLine()) != null) {
-            this.logger.info(line);
+            log.info(line);
         }
 
         process.waitFor();
