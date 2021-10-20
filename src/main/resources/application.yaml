@@ -13,9 +13,9 @@ logging:
 
 ptl:
   download:
-    youtube: "youtube-movies"
-    raw: "raw"
-    converted: "converted"
+    youtube: "data/youtube-movies"
+    raw: "data/raw"
+    converted: "data/converted"
 
   display:
     diameter: 20
