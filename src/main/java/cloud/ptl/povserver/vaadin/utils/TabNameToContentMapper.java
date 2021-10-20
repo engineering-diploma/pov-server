@@ -29,7 +29,7 @@ public class TabNameToContentMapper {
     public static String lastMappedComponent;
 
     public TabNameToContentMapper(SearchService searchService, UI ui, QueueService queueService, ResourceService resourceService, RabbitSender rabbitSender, MetricsService metricsService) throws NotFoundException {
-        QueueComponent queueComponent = new QueueComponent(queueService, ui, rabbitSender);
+        QueueComponent queueComponent = new QueueComponent(queueService, ui, rabbitSender, resourceService);
         SearchComponent searchComponent = new SearchComponent(
                 searchService,
                 ui,

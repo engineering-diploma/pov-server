@@ -78,12 +78,6 @@ public class SearchComponent extends VerticalLayout {
         hl.add(image);
         hl.add(item);
         RippleClickableCard rippleClickableCard = new RippleClickableCard(hl);
-//        ContextMenu contextMenu = new ContextMenu();
-//        contextMenu.setTarget(rippleClickableCard);
-//        contextMenu.addItem("Delete", e -> Notification.show("Deleted"));
-//        contextMenu.addItem("Move Up", e -> Notification.show("Move up"));
-//        contextMenu.addItem("Move Down", e -> Notification.show("Moved Down"));
-//        add(contextMenu);
         rippleClickableCard.setId("result-card");
         return rippleClickableCard;
     }
