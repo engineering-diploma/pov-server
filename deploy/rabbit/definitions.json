@@ -1,0 +1,108 @@
+{
+  "bindings": [
+    {
+      "arguments": {},
+      "destination": "pov-to-server-control-queue",
+      "destination_type": "queue",
+      "routing_key": "pov-to-server-control-binding",
+      "source": "pov-to-server-control-exchange",
+      "vhost": "/"
+    },
+    {
+      "arguments": {},
+      "destination": "server-to-pov-control-queue",
+      "destination_type": "queue",
+      "routing_key": "server-to-pov-control-binding",
+      "source": "server-to-pov-control-exchange",
+      "vhost": "/"
+    }
+  ],
+  "exchanges": [
+    {
+      "arguments": {},
+      "auto_delete": false,
+      "durable": true,
+      "name": "pov-to-server-control-exchange",
+      "type": "direct",
+      "vhost": "/"
+    },
+    {
+      "arguments": {},
+      "auto_delete": false,
+      "durable": true,
+      "name": "server-to-pov-control-exchange",
+      "type": "direct",
+      "vhost": "/"
+    }
+  ],
+  "global_parameters": [],
+  "parameters": [],
+  "permissions": [
+    {
+      "configure": ".*",
+      "read": ".*",
+      "user": "guest",
+      "vhost": "/",
+      "write": ".*"
+    },
+    {
+      "configure": ".*",
+      "read": ".*",
+      "user": "pov",
+      "vhost": "/",
+      "write": ".*"
+    }
+  ],
+  "policies": [],
+  "queues": [
+    {
+      "arguments": {},
+      "auto_delete": false,
+      "durable": true,
+      "name": "server-to-pov-control-queue",
+      "type": "classic",
+      "vhost": "/"
+    },
+    {
+      "arguments": {},
+      "auto_delete": false,
+      "durable": true,
+      "name": "pov-to-server-control-queue",
+      "type": "classic",
+      "vhost": "/"
+    }
+  ],
+  "rabbit_version": "3.9.2",
+  "rabbitmq_version": "3.9.2",
+  "topic_permissions": [],
+  "users": [
+    {
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "limits": {},
+      "name": "pov",
+      "password_hash": "M1Jw1kXM5zGQufon/lbSwxPbGCoNKoftnMi0K2rx41dlGt4p",
+      "tags": [
+        "administrator"
+      ]
+    },
+    {
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "limits": {},
+      "name": "guest",
+      "password_hash": "+qEmmY7F6QUXhfisET2B67VCWF7z1V2QxNO5x0n10xnxjN+5",
+      "tags": [
+        "administrator"
+      ]
+    }
+  ],
+  "vhosts": [
+    {
+      "limits": [],
+      "metadata": {
+        "description": "Default virtual host",
+        "tags": []
+      },
+      "name": "/"
+    }
+  ]
+}
