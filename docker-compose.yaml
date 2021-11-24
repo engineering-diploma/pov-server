@@ -25,9 +25,16 @@ services:
     volumes:
       - s3-data:/data
 
-#  rabbit:
-#    image: tbd
+  rabbit:
+    image: custom-rabbit
+    ports:
+      - 5671:5671
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq
 
 volumes:
   server-data:
   s3-data:
+  rabbit-data:
