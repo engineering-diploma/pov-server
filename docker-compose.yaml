@@ -1,0 +1,20 @@
+version: '3'
+services:
+  server:
+    image: ghcr.io/engineering-diploma/pov-server:latest
+    environment:
+      - RABBIT_HOST=rabbit
+      - RABBIT_PORT=5672
+      - RABBIT_USERNAME=pov
+      - RABBIT_PASSWORD=pov
+      - API_USERNAME=test
+      - API_PASSWORD=test
+      - CONSOLE_USERNAME=console
+      - CONSOLE_PASSWORD=console
+    ports:
+      - 8080:8080
+    volumes:
+      - data:/pov-server/data/
+
+#  rabbit:
+#    image: tbd
