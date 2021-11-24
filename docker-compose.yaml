@@ -14,7 +14,20 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - data:/pov-server/data/
+      - server-data:/pov-server/data/
+
+  s3-storage:
+    image: minio/minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    command: [ "server", "/data", "--console-address", ":9001" ]
+    volumes:
+      - s3-data:/data
 
 #  rabbit:
 #    image: tbd
+
+volumes:
+  server-data:
+  s3-data:
