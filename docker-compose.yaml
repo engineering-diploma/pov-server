@@ -26,7 +26,7 @@ services:
       - s3-data:/data
 
   rabbit:
-    image: custom-rabbit
+    image: ghcr.io/engineering-diploma/custom-rabbit-mq:latest
     ports:
       - 5671:5671
       - 5672:5672
