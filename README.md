@@ -18,7 +18,8 @@ is a simple Spring based server for managing POV project. For ease of deployment
 ### Docker
 
 In this mode standalone server will be started. To function properly, one must provide all dependencies. Thoes are:
-- MySQL - MinIO (S3)
+- MySQL 
+- MinIO (S3)
 - RabbitMQ
 
 Once Rabbit was deployed, it should be customized. There is need to create topics, queues and bindings. Moreover POV
