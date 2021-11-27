@@ -34,7 +34,26 @@ services:
     volumes:
       - rabbit-data:/var/lib/rabbitmq
 
+  database:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pov
+      MYSQL_DATABASE: pov_db
+      MYSQL_USER: pov
+      MYSQL_PASSWORD: pov
+    ports:
+      - 3306:3306
+    volumes:
+      - database-data:/var/lib/mysql
+
+  mysql-adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+
 volumes:
   server-data:
   s3-data:
   rabbit-data:
+  database-data:
