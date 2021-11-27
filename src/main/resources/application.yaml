@@ -1,7 +1,8 @@
 spring:
-  profiles:
-    active:
-      - prod
+  datasource:
+    username: pov
+    password: pov
+    url: jdbc:mysql://localhost:3306/pov_db
 
   jpa:
     hibernate:
@@ -19,3 +20,15 @@ ptl:
 
   display:
     diameter: 20
+
+  rabbit:
+    host: localhost
+    port: 5671
+    username: pov
+    password: pov
+  api:
+    username: apitest
+    password: apitest
+  console:
+    username: console
+    password: console
