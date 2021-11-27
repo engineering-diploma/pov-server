@@ -1,12 +1,3 @@
-spring:
-#  datasource:
-  #    password: ${DB_PASSWORD}
-  #    username: ${DB_USERNAME}
-  #    url: ${DB_URL}
-  datasource:
-    username: "sa"
-    url: "jdbc:h2:file:./data/main"
-
 ptl:
   rabbit:
     host: ${RABBIT_HOST}
