@@ -1,3 +1,9 @@
+spring:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+
 ptl:
   rabbit:
     host: ${RABBIT_HOST}
