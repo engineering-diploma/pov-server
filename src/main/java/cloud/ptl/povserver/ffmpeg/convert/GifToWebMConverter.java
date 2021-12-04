@@ -11,15 +11,13 @@ import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 @Service
 @Slf4j
-public class GifToWebMConverter implements ResourceConverter {
+public class GifToWebMConverter extends ResourceConverter {
     private final String FFMPEG_CONVERT_COMMAND =
             "/usr/bin/ffmpeg -y -i %s -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -s %dx%d %s.webm";
 
@@ -81,30 +79,6 @@ public class GifToWebMConverter implements ResourceConverter {
                         dimensions.getSecond(),
                         convertRequest.getDestinationFolder().getAbsolutePath() + File.separator + convertRequest.getFileToConvert().getName()
                 );
-        ProcessBuilder processBuilder = new ProcessBuilder(inflateCommand.split(" "));
-        processBuilder.redirectErrorStream(true);
-        Process process = processBuilder.start();
-        // connect to process streams
-        BufferedReader outputBufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        BufferedReader errorBufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-        String line;
-
-        while ((line = outputBufferedReader.readLine()) != null) {
-            log.info(line);
-        }
-        while ((line = errorBufferedReader.readLine()) != null) {
-            log.info(line);
-        }
-
-        process.waitFor();
-        if (process.exitValue() == 0) {
-            // processed successfully
-            // rewrite data to resource
-            return;
-        } else {
-            // some error occurred
-            throw new RuntimeException("Cannot convert file to given resolution, ffmpeg exit code in none-zero");
-        }
+        this.run(inflateCommand);
     }
 }

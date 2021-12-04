@@ -2,6 +2,8 @@ package cloud.ptl.povserver.service.download;
 
 import cloud.ptl.povserver.data.model.ResolutionDAO;
 import cloud.ptl.povserver.data.model.ResourceDAO;
+import cloud.ptl.povserver.ffmpeg.convert.ConvertRequest;
+import cloud.ptl.povserver.ffmpeg.convert.FormatConverter;
 import cloud.ptl.povserver.service.resource.ResolutionService;
 import cloud.ptl.povserver.service.resource.ResourceService;
 import com.github.kiulian.downloader.YoutubeDownloader;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -30,13 +33,15 @@ public class YTDownloadService implements DownloadService {
     private final YoutubeDownloader youtubeDownloader = new YoutubeDownloader();
     private final ResolutionService resolutionService;
     private final ResourceService resourceService;
+    private final FormatConverter formatConverter;
     @Value("${ptl.download.youtube}")
     private String youtubeDownloadPath;
     private File youtubeDownloadDir;
 
-    public YTDownloadService(ResolutionService resolutionService, ResourceService resourceService) {
+    public YTDownloadService(ResolutionService resolutionService, ResourceService resourceService, FormatConverter formatConverter) {
         this.resolutionService = resolutionService;
         this.resourceService = resourceService;
+        this.formatConverter = formatConverter;
     }
 
     @PostConstruct
@@ -90,27 +95,18 @@ public class YTDownloadService implements DownloadService {
                         @Override
                         public void onDownloading(int i) {
                             downloadCallback.onDownload(i);
-                            logger.info("Downloading... " + i + "%");
+                            logger.info(
+                                    String.format(
+                                            "Downloading... %d ",
+                                            i
+                                    )
+                            );
                         }
 
                         @Override
                         public void onFinished(File file) {
-                            ResourceDAO resourceDAO = new ResourceDAO();
-                            resourceDAO.setDescription(
-                                    videoInfo.details().description()
-                            );
-                            resourceDAO.setThumbnailUrls(videoInfo.details().thumbnails());
-                            resourceDAO.setMovie(file);
-                            resourceDAO.setIsMovie(true);
-                            resourceDAO.setTitle(videoInfo.details().title());
-                            resourceDAO.setResolutions(new ArrayList<>());
-                            resourceDAO.setDownloadUrl(link);
-                            ResolutionDAO resolutionDAO = new ResolutionDAO();
-                            resolutionDAO.setWidth(videoInfo.bestVideoFormat().width());
-                            resolutionDAO.setHeight(videoInfo.bestVideoFormat().height());
-                            resolutionDAO = resolutionService.save(resolutionDAO);
-                            resourceDAO.getResolutions().add(resolutionDAO);
-                            resourceDAO = resourceService.save(resourceDAO);
+                            ResourceDAO resourceDAO = saveWebM(videoInfo, file, link);
+                            resourceDAO = convertMp4(resourceDAO);
                             downloadCallback.onFinished(resourceDAO);
                             logger.info("Download complete");
                         }
@@ -123,9 +119,7 @@ public class YTDownloadService implements DownloadService {
                     .saveTo(this.youtubeDownloadDir)
                     .renameTo(videoInfo.details().title().replace(" ", "_"))
                     .async();
-            //RequestVideoFileDownload request = new RequestVideoFileDownload(format);
-            Response<File> response = this.youtubeDownloader.downloadVideoFile(request);
-//        response.data();
+            this.youtubeDownloader.downloadVideoFile(request);
         } else {
             downloadCallback.onDownload(100);
             downloadCallback.onFinished(
@@ -133,5 +127,41 @@ public class YTDownloadService implements DownloadService {
             );
         }
 
+    }
+
+    private ResourceDAO saveWebM(VideoInfo videoInfo, File file, String link) {
+        ResourceDAO resourceDAO = new ResourceDAO();
+        resourceDAO.setDescription(
+                videoInfo.details().description()
+        );
+        resourceDAO.setThumbnailUrls(videoInfo.details().thumbnails());
+        resourceDAO.setMovie(file);
+        resourceDAO.setIsMovie(true);
+        resourceDAO.setTitle(videoInfo.details().title());
+        resourceDAO.setResolutions(new ArrayList<>());
+        resourceDAO.setDownloadUrl(link);
+        ResolutionDAO resolutionDAO = new ResolutionDAO();
+        resolutionDAO.setWidth(videoInfo.bestVideoFormat().width());
+        resolutionDAO.setHeight(videoInfo.bestVideoFormat().height());
+        resolutionDAO = resolutionService.save(resolutionDAO);
+        resourceDAO.getResolutions().add(resolutionDAO);
+        return resourceService.save(resourceDAO);
+    }
+
+    private ResourceDAO convertMp4(ResourceDAO resourceDAO) {
+        ConvertRequest convertRequest = new ConvertRequest();
+        convertRequest.setSourceFormat(ConvertRequest.Format.WEBM);
+        convertRequest.setFileToConvert(resourceDAO.getMovie());
+        convertRequest.setDestinationFolder(this.youtubeDownloadDir);
+        try {
+            return this.formatConverter.convert(convertRequest);
+        } catch (IOException | InterruptedException e) {
+            logger.error(
+                    String.format("Cannot download video, exception: %s",
+                            e.getMessage()
+                    )
+            );
+            return resourceDAO;
+        }
     }
 }
