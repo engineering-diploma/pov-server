@@ -33,6 +33,8 @@ public class ResourceDAO {
     private File image;
     @Convert(converter = FileToStringConverter.class)
     private File movie;
+    @Convert(converter = FileToStringConverter.class)
+    private File frameStream;
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
