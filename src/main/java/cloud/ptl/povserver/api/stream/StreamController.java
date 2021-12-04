@@ -2,6 +2,7 @@ package cloud.ptl.povserver.api.stream;
 
 import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.service.stream.StreamService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api")
 public class StreamController {
+    @Qualifier("videoStreamService")
     private final StreamService streamService;
 
     public StreamController(StreamService streamService) {
