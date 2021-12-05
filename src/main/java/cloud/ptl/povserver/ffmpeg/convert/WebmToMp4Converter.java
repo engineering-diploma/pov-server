@@ -48,7 +48,9 @@ public class WebmToMp4Converter extends ResourceConverter {
         newResourceDAO.setTitle(resourceDAO.getTitle());
         newResourceDAO.setDescription(resourceDAO.getDescription());
         newResourceDAO.setDownloadUrl(resourceDAO.getDownloadUrl());
-        newResourceDAO.setThumbnailUrls(resourceDAO.getThumbnailUrls());
+        newResourceDAO.setThumbnailUrls(new ArrayList<>());
+        resourceDAO.getThumbnailUrls().forEach(el -> newResourceDAO.getThumbnailUrls().add(el));
+        // newResourceDAO.setThumbnailUrls(resourceDAO.getThumbnailUrls());
         newResourceDAO.setIsMovie(true);
         newResourceDAO.setFormat(ConvertRequest.Format.MP4);
         return this.resourceService.save(newResourceDAO);
