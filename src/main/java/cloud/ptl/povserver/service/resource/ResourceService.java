@@ -6,6 +6,7 @@ import cloud.ptl.povserver.exception.NotFoundException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -32,6 +33,17 @@ public class ResourceService {
             throw new NotFoundException("Resource with id=" + id + " not found");
         else
             return optionalResource.get();
+    }
+
+    public ResourceDAO findByMovie(File file) throws NotFoundException {
+        return this.resourceRepository
+                .findByMovie(file)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format(
+                                "Cannot find resource with given movie path: %s",
+                                file.getAbsolutePath()
+                        )
+                ));
     }
 
     public ResourceDAO save(ResourceDAO resourceDAO) {
