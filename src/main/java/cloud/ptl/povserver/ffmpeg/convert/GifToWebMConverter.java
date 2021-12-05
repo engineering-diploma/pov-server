@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 public class GifToWebMConverter extends ResourceConverter {
     private final String FFMPEG_CONVERT_COMMAND =
-            "/usr/bin/ffmpeg -y -i %s -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -s %dx%d %s.webm";
+            "ffmpeg -i %s %s.mp4";
 
     private final ResolutionService resolutionService;
     private final ResourceService resourceService;
@@ -37,7 +37,7 @@ public class GifToWebMConverter extends ResourceConverter {
     @Override
     public ResourceDAO convert(ConvertRequest convertRequest) throws IOException, InterruptedException {
         Pair<Integer, Integer> dimensions = this.getGifDimensions(convertRequest.getFileToConvert());
-        this.callFFMPEGtoConvertToGif(convertRequest, dimensions);
+        this.callFFMPEGtoConvertToGif(convertRequest);
         ResolutionDAO resolutionDAO = new ResolutionDAO();
         resolutionDAO.setHeight(dimensions.getFirst());
         resolutionDAO.setWidth(dimensions.getSecond());
@@ -47,9 +47,10 @@ public class GifToWebMConverter extends ResourceConverter {
         newResourceDAO.setResolutions(List.of(resolutionDAO));
         newResourceDAO.setMovie(
                 new File(
-                        convertRequest.getDestinationFolder().getAbsolutePath() + File.separator + convertRequest.getFileToConvert().getName() + ".webm"
+                        convertRequest.getDestinationFolder().getAbsolutePath() + File.separator + convertRequest.getFileToConvert().getName() + ".mp4"
                 )
         );
+        newResourceDAO.setFormat(ConvertRequest.Format.MP4);
         newResourceDAO.setTitle(convertRequest.getFileToConvert().getName());
         return this.resourceService.save(newResourceDAO);
     }
@@ -70,13 +71,11 @@ public class GifToWebMConverter extends ResourceConverter {
         return null;
     }
 
-    private void callFFMPEGtoConvertToGif(ConvertRequest convertRequest, Pair<Integer, Integer> dimensions) throws IOException, InterruptedException {
+    private void callFFMPEGtoConvertToGif(ConvertRequest convertRequest) throws IOException, InterruptedException {
         String inflateCommand =
                 String.format(
                         this.FFMPEG_CONVERT_COMMAND,
                         convertRequest.getFileToConvert().getAbsolutePath(),
-                        dimensions.getFirst(),
-                        dimensions.getSecond(),
                         convertRequest.getDestinationFolder().getAbsolutePath() + File.separator + convertRequest.getFileToConvert().getName()
                 );
         this.run(inflateCommand);
