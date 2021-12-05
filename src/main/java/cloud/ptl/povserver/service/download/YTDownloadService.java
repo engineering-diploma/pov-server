@@ -36,7 +36,10 @@ public class YTDownloadService implements DownloadService {
     private final FormatConverter formatConverter;
     @Value("${ptl.download.youtube}")
     private String youtubeDownloadPath;
+    @Value("ptl.download.converted")
+    private String convertedDownloadsPath;
     private File youtubeDownloadDir;
+    private File convertedDownloadsDir;
 
     public YTDownloadService(ResolutionService resolutionService, ResourceService resourceService, FormatConverter formatConverter) {
         this.resolutionService = resolutionService;
@@ -48,6 +51,9 @@ public class YTDownloadService implements DownloadService {
     private void init() {
         this.youtubeDownloadDir = new File(this.youtubeDownloadPath);
         this.youtubeDownloadDir.mkdir();
+
+        this.convertedDownloadsDir = new File(this.convertedDownloadsPath);
+        this.convertedDownloadsDir.mkdir();
     }
 
     /**
