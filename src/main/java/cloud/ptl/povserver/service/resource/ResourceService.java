@@ -11,6 +11,8 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static cloud.ptl.povserver.ffmpeg.convert.ConvertRequest.Format.FRAMES;
+
 /**
  * Everything we store in system is resource. It can be gif, picture or movie.
  * This resource is used to manage resource entity
@@ -29,6 +31,16 @@ public class ResourceService {
 
     public Collection<ResourceDAO> findAllMP4Resources() {
         return this.resourceRepository.findAllByFormatEquals(ConvertRequest.Format.MP4);
+    }
+
+    public boolean existsByTitleAndIsFrames(String title) {
+        return this.resourceRepository.existsByTitleAndFormat(title, FRAMES);
+    }
+
+    public ResourceDAO findByTitleAndIsFrames(String title) throws NotFoundException {
+        return this.resourceRepository
+                .findByTitleAndFormat(title, FRAMES)
+                .orElseThrow(() -> new NotFoundException("Cannot find resource with title " + title));
     }
 
     public ResourceDAO findById(Long id) throws NotFoundException {

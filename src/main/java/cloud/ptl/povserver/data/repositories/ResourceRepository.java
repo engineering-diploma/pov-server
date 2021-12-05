@@ -16,5 +16,9 @@ public interface ResourceRepository extends CrudRepository<ResourceDAO, Long> {
 
     Optional<ResourceDAO> findByMovie(File file);
 
+    Optional<ResourceDAO> findByTitleAndFormat(String title, ConvertRequest.Format format);
+
     Collection<ResourceDAO> findAllByFormatEquals(ConvertRequest.Format format);
+
+    boolean existsByTitleAndFormat(String title, ConvertRequest.Format format);
 }
