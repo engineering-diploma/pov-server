@@ -140,6 +140,7 @@ public class YTDownloadService implements DownloadService {
         resourceDAO.setTitle(videoInfo.details().title());
         resourceDAO.setResolutions(new ArrayList<>());
         resourceDAO.setDownloadUrl(link);
+        resourceDAO.setFormat(ConvertRequest.Format.WEBM);
         ResolutionDAO resolutionDAO = new ResolutionDAO();
         resolutionDAO.setWidth(videoInfo.bestVideoFormat().width());
         resolutionDAO.setHeight(videoInfo.bestVideoFormat().height());
