@@ -3,6 +3,7 @@ package cloud.ptl.povserver.service.resource;
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.data.repositories.ResourceRepository;
 import cloud.ptl.povserver.exception.NotFoundException;
+import cloud.ptl.povserver.ffmpeg.convert.ConvertRequest;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,10 @@ public class ResourceService {
 
     public Collection<ResourceDAO> findAllResources() {
         return (Collection<ResourceDAO>) this.resourceRepository.findAll();
+    }
+
+    public Collection<ResourceDAO> findAllMP4Resources() {
+        return this.resourceRepository.findAllByFormatEquals(ConvertRequest.Format.MP4);
     }
 
     public ResourceDAO findById(Long id) throws NotFoundException {
@@ -113,5 +118,10 @@ public class ResourceService {
             this.resourceRepository.save(resources.get(idx + 1));
             this.resourceRepository.save(resourceDAO);
         }
+    }
+
+    public ResourceDAO copyThumbnails(ResourceDAO from, ResourceDAO to) {
+        from.getThumbnailUrls().forEach(el -> to.getThumbnailUrls().add(el));
+        return to;
     }
 }
