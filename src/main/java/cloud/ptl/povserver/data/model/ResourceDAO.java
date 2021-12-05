@@ -1,6 +1,7 @@
 package cloud.ptl.povserver.data.model;
 
 import cloud.ptl.povserver.data.converter.FileToStringConverter;
+import cloud.ptl.povserver.ffmpeg.convert.ConvertRequest;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +36,9 @@ public class ResourceDAO {
     private File movie;
     @Convert(converter = FileToStringConverter.class)
     private File frameStream;
+
+    @Enumerated(EnumType.STRING)
+    private ConvertRequest.Format format;
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)

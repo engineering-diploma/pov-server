@@ -12,6 +12,6 @@ public class ConvertRequest {
     private File destinationFolder;
 
     public static enum Format {
-        GIF, WEBM
+        GIF, WEBM, MP4
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class ResizeService {
     private final String FFMPEG_RESIZE_COMMAND =
-            "/usr/bin/ffmpeg -i %s -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus -s %dx%d %s%dx%d.webm";
+            "/usr/bin/ffmpeg -i %s -s %dx%d -c:a copy %s%dx%d.mp4";
     private final ResourceService resourceService;
     private final ResolutionService resolutionService;
 
@@ -39,7 +39,7 @@ public class ResizeService {
         }
         // update path to newly created resource
         String newPath = resizeRequest.getResourceDAO().getMovie().getAbsolutePath();
-        newPath += resizeRequest.getWidth() + "x" + resizeRequest.getHeight() + ".webm";
+        newPath += resizeRequest.getWidth() + "x" + resizeRequest.getHeight() + ".mp4";
         ResourceDAO resizedResource = resizeRequest.getResourceDAO();
         resizedResource.setMovie(new File(newPath));
         return resizedResource;

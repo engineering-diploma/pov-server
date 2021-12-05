@@ -15,10 +15,10 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api")
 public class StreamController {
-    @Qualifier("videoStreamService")
+
     private final StreamService streamService;
 
-    public StreamController(StreamService streamService) {
+    public StreamController(@Qualifier("videoStreamService") StreamService streamService) {
         this.streamService = streamService;
     }
 

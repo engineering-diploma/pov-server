@@ -15,10 +15,6 @@ import java.util.List;
 @Entity
 @Table(name = "resolution")
 public class ResolutionDAO {
-    public enum Format {
-        VIDEO, FRAMES
-    }
-
     @ManyToMany(mappedBy = "resolutions")
     List<ResourceDAO> resources;
     @Id
