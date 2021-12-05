@@ -17,8 +17,8 @@ public class QueueService {
         this.resourceService = resourceService;
     }
 
-    public Collection<ResourceDAO> findAllResources() {
-        return this.resourceService.findAllResources();
+    public Collection<ResourceDAO> findAllMP4Resources() {
+        return this.resourceService.findAllMP4Resources();
     }
 
     public void deleteResource(ResourceDAO resourceDAO) {
