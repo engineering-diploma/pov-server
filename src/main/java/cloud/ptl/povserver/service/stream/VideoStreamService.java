@@ -24,7 +24,7 @@ import static java.lang.Math.min;
 
 @Data
 @Service("videoStreamService")
-public class VideoStreamService implements StreamService {
+public class VideoStreamService {
     private static final long CHUNK_SIZE = 1000000L;
     private final ResourceService resourceService;
     private final FfmpegMediator ffmpegService;
