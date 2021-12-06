@@ -1,49 +1,58 @@
 package cloud.ptl.povserver.service.stream;
 
+import cloud.ptl.povserver.data.frame.PovFrame;
+import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.service.frame.FrameParserService;
-import com.vaadin.flow.internal.Pair;
+import cloud.ptl.povserver.service.frame.PovFrameRequest;
+import cloud.ptl.povserver.service.resource.ResourceService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.support.ResourceRegion;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Data
 @Slf4j
 @Service("frameStreamService")
-public class FrameStreamService implements StreamService {
-    private FrameParserService frameParseService;
+public class FrameStreamService {
+    private final FrameParserService frameParseService;
+    private final ResourceService resourceService;
 
-    public FrameStreamService(FrameParserService frameParseService) {
+    public FrameStreamService(FrameParserService frameParseService, ResourceService resourceService) {
         this.frameParseService = frameParseService;
+        this.resourceService = resourceService;
     }
 
-    @Override
-    public ResponseEntity<ResourceRegion> getVideoRegionResized(String rangeHeader, Long videoId, int width, int height) throws IOException, InterruptedException, NotFoundException {
-        log.error("This method should never be invoked. For more information consult documentation. Method: ");
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<ResourceRegion> getVideoRegion(String rangeHeader, Long videoId) throws IOException, NotFoundException {
-        log.error("This method should never be invoked. For more information consult documentation. Method: ");
-        return null;
-    }
-
-    private Pair<Integer, Integer> extractFramesNumbers(String rangeHeader) {
-        String framesNumbers = rangeHeader.split(" ")[0];
-        String start = framesNumbers.split(",")[0];
-        String end = framesNumbers.split(",")[1];
-        return new Pair<>(
-                Integer.valueOf(start),
-                Integer.valueOf(end)
+    public String getVideoRegion(Long videoId, int height, int width, int sampleInterval, int start, int end) throws IOException, NotFoundException, InterruptedException {
+        ResourceDAO requestedResource = this.resourceService.findById(videoId);
+        PovFrameRequest povFrameRequest = new PovFrameRequest();
+        povFrameRequest.setHeight(height);
+        povFrameRequest.setWidth(width);
+        povFrameRequest.setSamplingInterval(sampleInterval);
+        povFrameRequest.setResourceDAO(requestedResource);
+        List<PovFrame> frames = this.frameParseService.getFrames(povFrameRequest);
+        end = Math.min(end, frames.size());
+        start = Math.max(0, start);
+        return this.join(
+                frames.subList(start, end)
         );
     }
 
-    private int extractSamplingInterval(String rangeHeader) {
-        return Integer.parseInt(rangeHeader.split(" ")[1]);
+    private String join(List<PovFrame> frames) {
+        StringBuilder result = new StringBuilder();
+        for (PovFrame frame : frames) {
+            for (List<PovFrame.Cell> row : frame.getRows()) {
+                for (PovFrame.Cell cell : row) {
+                    result.append(String.format(
+                            "%s %s %s ",
+                            cell.getR(), cell.getG(), cell.getB()
+                    ));
+                }
+                result.append("\n");
+            }
+        }
+        return result.toString();
     }
 }

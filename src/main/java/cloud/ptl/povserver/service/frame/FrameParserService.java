@@ -27,7 +27,7 @@ public class FrameParserService {
     private final String CONVERSION_COMMAND = "etc/frame_converter.sh %s %s %d %d %d";
     private final ResourceService resourceService;
     private final ResolutionService resolutionService;
-    @Value("$ptl.download.converted")
+    @Value("${ptl.download.converted}")
     private String convertedPath;
     private File convertedDir;
 
@@ -46,8 +46,6 @@ public class FrameParserService {
         String newFramesFileDestination = this.createName(request);
         if (this.checkIfFramesFileExist(newFramesFileDestination)) {
             return this.fetchResourceDaoWithFileName(newFramesFileDestination);
-        } else if (this.checkIfFramesEntryInDBExists(request.getResourceDAO())) {
-            return this.addNewResolution(request, newFramesFileDestination);
         } else {
             return this.makeNewFramesFile(request, newFramesFileDestination);
         }
@@ -140,7 +138,7 @@ public class FrameParserService {
     private ResourceDAO fetchResourceDaoWithFileName(String name) {
         File movie = new File(name);
         try {
-            return this.resourceService.findByMovie(movie);
+            return this.resourceService.findByFrameStream(movie);
         } catch (NotFoundException e) {
             log.error(
                     String.format(
@@ -152,11 +150,11 @@ public class FrameParserService {
         }
     }
 
-    private boolean checkIfFramesFileExist(String fileName) {
+    private boolean checkIfFramesFileExist(String path) {
         int existingWithSameName =
                 Objects.requireNonNull(
                         this.convertedDir.listFiles(
-                                el -> el.getName().equals(fileName)
+                                el -> el.getAbsolutePath().equals(path)
                         )
                 ).length;
         return existingWithSameName > 0;
@@ -165,20 +163,23 @@ public class FrameParserService {
     private String createName(PovFrameRequest request) {
         return this.convertedDir.getAbsolutePath()
                 + File.separator
-                + request.getResourceDAO().getTitle()
+                + request.getResourceDAO().getTitle().replace(" ", "_")
                 + "_" + request.getWidth() + "x" + request.getHeight() + "_" + request.getSamplingInterval() + "ms.frames";
     }
 
-    public List<PovFrame> getFrames(PovFrameRequest request) throws IOException {
-        File file = request.getResourceDAO().getMovie();
+    public List<PovFrame> getFrames(PovFrameRequest request) throws IOException, NotFoundException, InterruptedException {
+        ResourceDAO framesResourceDAO = this.createFramesFrom(request);
+        File file = framesResourceDAO.getFrameStream();
         List<String> lines = FileUtils.readLines(file);
         List<PovFrame> povFrames = new ArrayList<>();
         PovFrame povFrame = new PovFrame();
+        povFrame.setRows(new ArrayList<>());
         for (String line : lines) {
             // "End" is delimiter for each parsed frame
             if (line.contains("End")) {
                 povFrames.add(povFrame);
                 povFrame = new PovFrame();
+                povFrame.setRows(new ArrayList<>());
                 continue;
             }
             List<PovFrame.Cell> cellLine = new ArrayList<>();
@@ -194,6 +195,6 @@ public class FrameParserService {
             }
             povFrame.getRows().add(cellLine);
         }
-        return null;
+        return povFrames;
     }
 }

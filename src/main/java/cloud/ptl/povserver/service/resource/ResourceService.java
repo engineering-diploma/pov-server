@@ -43,6 +43,10 @@ public class ResourceService {
                 .orElseThrow(() -> new NotFoundException("Cannot find resource with title " + title));
     }
 
+    public boolean exists(ResourceDAO resourceDAO) {
+        return this.resourceRepository.existsById(resourceDAO.getId());
+    }
+
     public ResourceDAO findById(Long id) throws NotFoundException {
         Optional<ResourceDAO> optionalResource =
                 this.resourceRepository.findById(id);
@@ -50,6 +54,17 @@ public class ResourceService {
             throw new NotFoundException("Resource with id=" + id + " not found");
         else
             return optionalResource.get();
+    }
+
+    public ResourceDAO findByFrameStream(File file) throws NotFoundException {
+        return this.resourceRepository
+                .findAllByFrameStream(file)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format(
+                                "Cannot find resource with given frame stream path: %s",
+                                file.getAbsolutePath()
+                        )
+                ));
     }
 
     public ResourceDAO findByMovie(File file) throws NotFoundException {
