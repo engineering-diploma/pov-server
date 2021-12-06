@@ -87,6 +87,14 @@ public class ResourceService {
         this.resourceRepository.delete(resourceDAO);
     }
 
+    public List<ResourceDAO> findAllByTitleContaining(String title) {
+        return this.resourceRepository.findAllByTitleContaining(title);
+    }
+
+    public List<ResourceDAO> findAllByTitleContainingAndIsFrameStream(String title) {
+        return this.resourceRepository.findAllByTitleContainingAndFormat(title, FRAMES);
+    }
+
     public boolean existByDownloadUrl(String donwloadUrl) {
         return this.resourceRepository.existsByDownloadUrl(donwloadUrl);
     }
@@ -150,5 +158,15 @@ public class ResourceService {
     public ResourceDAO copyThumbnails(ResourceDAO from, ResourceDAO to) {
         from.getThumbnailUrls().forEach(el -> to.getThumbnailUrls().add(el));
         return to;
+    }
+
+    public void deleteRelatedTo(ResourceDAO resourceDAO) {
+        List<ResourceDAO> related = this.findAllByTitleContaining(resourceDAO.getTitle());
+        related.stream()
+                .filter(el -> !el.equals(resourceDAO))
+                .forEach(el -> {
+                    if (el.getMovie() != null) el.getMovie().delete();
+                    else el.getFrameStream().delete();
+                });
     }
 }
