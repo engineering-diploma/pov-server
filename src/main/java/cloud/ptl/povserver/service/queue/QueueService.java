@@ -11,7 +11,7 @@ import java.util.Collection;
  */
 @Service
 public class QueueService {
-    private ResourceService resourceService;
+    private final ResourceService resourceService;
 
     public QueueService(ResourceService resourceService) {
         this.resourceService = resourceService;
@@ -22,6 +22,7 @@ public class QueueService {
     }
 
     public void deleteResource(ResourceDAO resourceDAO) {
+        this.resourceService.deleteRelatedTo(resourceDAO);
         this.resourceService.delete(resourceDAO);
     }
 
