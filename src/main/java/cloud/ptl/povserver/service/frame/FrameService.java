@@ -23,7 +23,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class FrameParserService {
+public class FrameService {
     private final String CONVERSION_COMMAND = "etc/frame_converter.sh %s %s %d %d %d";
     private final ResourceService resourceService;
     private final ResolutionService resolutionService;
@@ -31,7 +31,7 @@ public class FrameParserService {
     private String convertedPath;
     private File convertedDir;
 
-    public FrameParserService(ResourceService resourceService, ResolutionService resolutionService) {
+    public FrameService(ResourceService resourceService, ResolutionService resolutionService) {
         this.resourceService = resourceService;
         this.resolutionService = resolutionService;
     }

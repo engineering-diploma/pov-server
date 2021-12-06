@@ -3,7 +3,7 @@ package cloud.ptl.povserver.service.stream;
 import cloud.ptl.povserver.data.frame.PovFrame;
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.exception.NotFoundException;
-import cloud.ptl.povserver.service.frame.FrameParserService;
+import cloud.ptl.povserver.service.frame.FrameService;
 import cloud.ptl.povserver.service.frame.PovFrameRequest;
 import cloud.ptl.povserver.service.resource.ResourceService;
 import lombok.Data;
@@ -17,10 +17,10 @@ import java.util.List;
 @Slf4j
 @Service("frameStreamService")
 public class FrameStreamService {
-    private final FrameParserService frameParseService;
+    private final FrameService frameParseService;
     private final ResourceService resourceService;
 
-    public FrameStreamService(FrameParserService frameParseService, ResourceService resourceService) {
+    public FrameStreamService(FrameService frameParseService, ResourceService resourceService) {
         this.frameParseService = frameParseService;
         this.resourceService = resourceService;
     }
