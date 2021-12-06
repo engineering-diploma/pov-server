@@ -1,0 +1,59 @@
+version: '3'
+services:
+  server:
+    image: ghcr.io/engineering-diploma/pov-server:latest
+    environment:
+      - RABBIT_HOST=rabbit
+      - RABBIT_PORT=5672
+      - RABBIT_USERNAME=pov
+      - RABBIT_PASSWORD=pov
+      - API_USERNAME=test
+      - API_PASSWORD=test
+      - CONSOLE_USERNAME=console
+      - CONSOLE_PASSWORD=console
+    ports:
+      - 8080:8080
+    volumes:
+      - server-data:/pov-server/data/
+
+  s3-storage:
+    image: minio/minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    command: [ "server", "/data", "--console-address", ":9001" ]
+    volumes:
+      - s3-data:/data
+
+  rabbit:
+    image: ghcr.io/engineering-diploma/custom-rabbit-mq:latest
+    ports:
+      - 5671:5671
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq
+
+  database:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pov
+      MYSQL_DATABASE: pov_db
+      MYSQL_USER: pov
+      MYSQL_PASSWORD: pov
+    ports:
+      - 3306:3306
+    volumes:
+      - database-data:/var/lib/mysql
+
+  mysql-adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+
+volumes:
+  server-data:
+  s3-data:
+  rabbit-data:
+  database-data:

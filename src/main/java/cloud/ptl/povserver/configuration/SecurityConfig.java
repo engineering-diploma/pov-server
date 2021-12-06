@@ -85,6 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // (development mode) webjars //
                 "/webjars/**",
                 // (production mode) static resources //
-                "/frontend-es5/**", "/frontend-es6/**");
+                "/frontend-es5/**", "/frontend-es6/**",
+                "/resources/**", "/error");
     }
 }

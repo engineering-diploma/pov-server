@@ -11,17 +11,18 @@ import java.util.Collection;
  */
 @Service
 public class QueueService {
-    private ResourceService resourceService;
+    private final ResourceService resourceService;
 
     public QueueService(ResourceService resourceService) {
         this.resourceService = resourceService;
     }
 
-    public Collection<ResourceDAO> findAllResources() {
-        return this.resourceService.findAllResources();
+    public Collection<ResourceDAO> findAllMP4Resources() {
+        return this.resourceService.findAllMP4Resources();
     }
 
     public void deleteResource(ResourceDAO resourceDAO) {
+        this.resourceService.deleteRelatedTo(resourceDAO);
         this.resourceService.delete(resourceDAO);
     }
 

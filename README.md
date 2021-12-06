@@ -1,18 +1,31 @@
 # POV Server
 
-is a simple Spring based server for managing POV project
+is a simple Spring based server for managing POV project. For ease of deployment `docker-compose.yaml` was created
 
 ## Used technologies
 
 - Spring
-  - Boot
-  - Repository
-  - Data JPA
+    - Boot
+    - Repository
+    - Data JPA
 - MySQL
 - Hibernate ORM
 - RabbitMQ
+- MinIO (S3 storage)
 
 ## How to run
+
+### Docker
+
+In this mode standalone server will be started. To function properly, one must provide all dependencies. Thoes are:
+- MySQL 
+- MinIO (S3)
+- RabbitMQ
+
+Once Rabbit was deployed, it should be customized. There is need to create topics, queues and bindings. Moreover POV
+will not start if connection to Rabbit is not encrypted, thus Rabbit should be provided with valid certificate.
+
+To provide maximal protection connection to DB should be also encrypted, otherwise server will fail
 
 ```bash
   docker run 
@@ -25,12 +38,24 @@ is a simple Spring based server for managing POV project
     -e API_PASSWORD=...
     -e CONSOLE_USERNAME=...
     -e CONSOLE_PASSWORD=...
-    -v <host_dir>:/pov-server/data/
-    -v <host_dir>:/pov-server/youtube-movies/
+    -e S3_USER=...
+    -e S3_PASSWORD=...
+    -e S3_HOST=...
+    -e DB_USERNAME=...
+    -e DB_PASSWORD=...
+    -e DB_HOST=...
+    -e DB_NAME=...
+    -e DB_PORT=...
     ghcr.io/engineering-diploma/pov-server:latest
 ```
 
-Both MySQL and RabbitMQ connection should be encrypted or fatal errors could occur
+### Docker Compose
+
+Easiest way to start this server is to use `docker-compose.yaml`. Now one click deployment is available.
+
+```bash
+  docker-compose up
+```
 
 ## What is POV
 

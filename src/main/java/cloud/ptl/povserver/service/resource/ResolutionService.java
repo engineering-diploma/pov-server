@@ -1,7 +1,9 @@
 package cloud.ptl.povserver.service.resource;
 
 import cloud.ptl.povserver.data.model.ResolutionDAO;
+import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.data.repositories.ResolutionRepository;
+import cloud.ptl.povserver.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,5 +21,13 @@ public class ResolutionService {
 
     public ResolutionDAO save(ResolutionDAO resolutionDAO) {
         return this.resolutionRepository.save(resolutionDAO);
+    }
+
+    public ResolutionDAO findByResourceDAO(ResourceDAO resourceDAO) throws NotFoundException {
+        return this.resolutionRepository
+                .findByResourcesContains(resourceDAO)
+                .orElseThrow(
+                        () -> new NotFoundException("There is no given resolution for resource " + resourceDAO.toString())
+                );
     }
 }

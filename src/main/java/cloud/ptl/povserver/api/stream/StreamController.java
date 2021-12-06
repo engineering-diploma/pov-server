@@ -1,7 +1,8 @@
 package cloud.ptl.povserver.api.stream;
 
 import cloud.ptl.povserver.exception.NotFoundException;
-import cloud.ptl.povserver.service.stream.StreamService;
+import cloud.ptl.povserver.service.stream.FrameStreamService;
+import cloud.ptl.povserver.service.stream.VideoStreamService;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,13 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api")
 public class StreamController {
-    private final StreamService streamService;
 
-    public StreamController(StreamService streamService) {
-        this.streamService = streamService;
+    private final VideoStreamService videoStreamService;
+    private final FrameStreamService frameStreamService;
+
+    public StreamController(VideoStreamService videoStreamService, FrameStreamService frameStreamService) {
+        this.videoStreamService = videoStreamService;
+        this.frameStreamService = frameStreamService;
     }
 
     /**
@@ -34,7 +38,7 @@ public class StreamController {
             @RequestHeader(value = "Range", required = false) String range,
             @PathVariable("id") Long id
     ) throws NotFoundException, IOException {
-        return this.streamService.getVideoRegion(range, id);
+        return this.videoStreamService.getVideoRegion(range, id);
     }
 
     /**
@@ -56,6 +60,18 @@ public class StreamController {
             @RequestParam("width") int width,
             @RequestParam("height") int height
     ) throws NotFoundException, IOException, InterruptedException {
-        return this.streamService.getVideoRegionResized(range, id, width, height);
+        return this.videoStreamService.getVideoRegionResized(range, id, width, height);
+    }
+
+    @GetMapping("/frames/{id}")
+    public String getFrames(
+            @PathVariable("id") Long videoId,
+            @RequestParam("height") int height,
+            @RequestParam("width") int width,
+            @RequestParam("sampleInterval") int sampleInterval,
+            @RequestParam("start") int start,
+            @RequestParam("end") int end
+    ) throws NotFoundException, IOException, InterruptedException {
+        return this.frameStreamService.getVideoRegion(videoId, height, width, sampleInterval, start, end);
     }
 }

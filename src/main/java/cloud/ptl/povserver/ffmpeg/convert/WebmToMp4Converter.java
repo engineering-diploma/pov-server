@@ -1,77 +1,71 @@
 package cloud.ptl.povserver.ffmpeg.convert;
 
-import cloud.ptl.povserver.data.model.ResolutionDAO;
 import cloud.ptl.povserver.data.model.ResourceDAO;
+import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.service.resource.ResolutionService;
 import cloud.ptl.povserver.service.resource.ResourceService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 @Service
 @Slf4j
-public class GifToWebMConverter extends ResourceConverter {
+public class WebmToMp4Converter extends ResourceConverter {
     private final String FFMPEG_CONVERT_COMMAND =
-            "ffmpeg -i %s %s.mp4";
+            "/usr/bin/ffmpeg -y -i %s -strict experimental %s.mp4";
 
     private final ResolutionService resolutionService;
     private final ResourceService resourceService;
 
-    public GifToWebMConverter(ResolutionService resolutionService, ResourceService resourceService) {
+    public WebmToMp4Converter(ResolutionService resolutionService, ResourceService resourceService) {
         this.resolutionService = resolutionService;
         this.resourceService = resourceService;
     }
 
     @Override
     public boolean supports(ConvertRequest.Format format) {
-        return ConvertRequest.Format.GIF.equals(format);
+        return format.equals(ConvertRequest.Format.WEBM);
     }
 
     @Override
     public ResourceDAO convert(ConvertRequest convertRequest) throws IOException, InterruptedException {
-        Pair<Integer, Integer> dimensions = this.getGifDimensions(convertRequest.getFileToConvert());
-        this.callFFMPEGtoConvertToGif(convertRequest);
-        ResolutionDAO resolutionDAO = new ResolutionDAO();
-        resolutionDAO.setHeight(dimensions.getFirst());
-        resolutionDAO.setWidth(dimensions.getSecond());
-        resolutionDAO = this.resolutionService.save(resolutionDAO);
-
+        this.convertToMp4(convertRequest);
+        ResourceDAO resourceDAO = this.findResourceDAOby(convertRequest.getFileToConvert());
         ResourceDAO newResourceDAO = new ResourceDAO();
-        newResourceDAO.setResolutions(List.of(resolutionDAO));
+        newResourceDAO.setResolutions(new ArrayList<>());
         newResourceDAO.setMovie(
                 new File(
                         convertRequest.getDestinationFolder().getAbsolutePath() + File.separator + convertRequest.getFileToConvert().getName() + ".mp4"
                 )
         );
-        newResourceDAO.setFormat(ConvertRequest.Format.MP4);
         newResourceDAO.setTitle(convertRequest.getFileToConvert().getName());
+        newResourceDAO.getResolutions().add(
+                resourceDAO.getResolutions().get(0)
+        );
+        newResourceDAO.setTitle(resourceDAO.getTitle());
+        newResourceDAO.setDescription(resourceDAO.getDescription());
+        newResourceDAO.setDownloadUrl(resourceDAO.getDownloadUrl());
+        newResourceDAO.setThumbnailUrls(new ArrayList<>());
+        resourceDAO.getThumbnailUrls().forEach(el -> newResourceDAO.getThumbnailUrls().add(el));
+        // newResourceDAO.setThumbnailUrls(resourceDAO.getThumbnailUrls());
+        newResourceDAO.setIsMovie(true);
+        newResourceDAO.setFormat(ConvertRequest.Format.MP4);
         return this.resourceService.save(newResourceDAO);
     }
 
-    private Pair<Integer, Integer> getGifDimensions(File file) throws IOException {
-        ImageReader is = ImageIO.getImageReadersBySuffix("GIF").next();
-        ImageInputStream iis;
+    private ResourceDAO findResourceDAOby(File file) {
         try {
-            iis = ImageIO.createImageInputStream(file);
-            is.setInput(iis);
-            return Pair.of(
-                    is.getWidth(0),
-                    is.getHeight(0)
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
+            return this.resourceService.findByMovie(file);
+        } catch (NotFoundException ex) {
+            log.error("There is no stored resolution for given resource, something is probably broken");
+            return null;
         }
-        return null;
     }
 
-    private void callFFMPEGtoConvertToGif(ConvertRequest convertRequest) throws IOException, InterruptedException {
+    private void convertToMp4(ConvertRequest convertRequest) throws IOException, InterruptedException {
         String inflateCommand =
                 String.format(
                         this.FFMPEG_CONVERT_COMMAND,

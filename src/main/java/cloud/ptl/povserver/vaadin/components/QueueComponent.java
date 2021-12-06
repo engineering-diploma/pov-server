@@ -92,12 +92,10 @@ public class QueueComponent extends VerticalLayout {
     }
 
     private Component createResourceList() {
-        List<ResourceDAO> resources = (List<ResourceDAO>) this.queueService.findAllResources();
+        List<ResourceDAO> resources = (List<ResourceDAO>) this.queueService.findAllMP4Resources();
         resources.sort(Comparator.comparingLong(ResourceDAO::getOrderr));
         VerticalCardComponentContainer container = new VerticalCardComponentContainer();
-        resources.forEach(el -> {
-            container.add(this.createCard(el));
-        });
+        resources.forEach(el -> container.add(this.createCard(el)));
         return container;
     }
 }

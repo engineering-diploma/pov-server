@@ -6,6 +6,7 @@ import cloud.ptl.povserver.ffmpeg.FfmpegMediator;
 import cloud.ptl.povserver.ffmpeg.resize.ResizeRequest;
 import cloud.ptl.povserver.service.metric.MetricsService;
 import cloud.ptl.povserver.service.resource.ResourceService;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.UrlResource;
@@ -21,17 +22,15 @@ import java.net.MalformedURLException;
 
 import static java.lang.Math.min;
 
-/**
- * Service used to stream video from server to clients
- */
-@Service
-public class StreamService {
+@Data
+@Service("videoStreamService")
+public class VideoStreamService {
     private static final long CHUNK_SIZE = 1000000L;
     private final ResourceService resourceService;
     private final FfmpegMediator ffmpegService;
     private final MetricsService metricsService;
 
-    public StreamService(ResourceService resourceService, FfmpegMediator ffmpegService, MetricsService metricsService) {
+    public VideoStreamService(ResourceService resourceService, FfmpegMediator ffmpegService, MetricsService metricsService) {
         this.resourceService = resourceService;
         this.ffmpegService = ffmpegService;
         this.metricsService = metricsService;
@@ -58,7 +57,7 @@ public class StreamService {
      * @param height      height of new video
      * @return resized stream of vide
      */
-    public ResponseEntity<ResourceRegion> getVideoRegionResized(String rangeHeader, Long videoId, int width, int height) throws NotFoundException, IOException, InterruptedException {
+    public ResponseEntity<ResourceRegion> getVideoRegionResized(String rangeHeader, Long videoId, int width, int height) throws IOException, InterruptedException, NotFoundException {
         ResourceDAO resourceDAO = this.resourceService.findById(videoId);
         ResizeRequest resizeRequest = new ResizeRequest();
         resizeRequest.setWidth(width);

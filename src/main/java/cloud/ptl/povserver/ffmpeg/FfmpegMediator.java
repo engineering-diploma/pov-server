@@ -44,6 +44,7 @@ public class FfmpegMediator {
     public static ConvertRequest.Format findFormat(String locator) {
         if (locator.endsWith(".gif")) return ConvertRequest.Format.GIF;
         else if (locator.endsWith(".mp4")) return ConvertRequest.Format.MP4;
+        else if (locator.endsWith(".webm")) return ConvertRequest.Format.WEBM;
         else throw new IllegalArgumentException(
                     String.format(
                             "Unrecognized file format: %s",
