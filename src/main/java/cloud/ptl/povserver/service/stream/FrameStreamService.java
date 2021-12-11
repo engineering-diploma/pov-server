@@ -6,6 +6,7 @@ import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.service.frame.FrameService;
 import cloud.ptl.povserver.service.frame.PovFrameRequest;
 import cloud.ptl.povserver.service.resource.ResourceService;
+import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,13 @@ import java.util.List;
 @Slf4j
 @Service("frameStreamService")
 public class FrameStreamService {
+    @Data
+    @Builder
+    public static class Region {
+        private String frames;
+        private Boolean includeEndFrame;
+    }
+
     private final FrameService frameParseService;
     private final ResourceService resourceService;
 
@@ -25,7 +33,7 @@ public class FrameStreamService {
         this.resourceService = resourceService;
     }
 
-    public String getVideoRegion(Long videoId, int height, int width, int sampleInterval, int start, int end) throws IOException, NotFoundException, InterruptedException {
+    public Region getVideoRegion(Long videoId, int height, int width, int sampleInterval, int start, Integer end) throws IOException, NotFoundException, InterruptedException {
         ResourceDAO requestedResource = this.resourceService.findById(videoId);
         PovFrameRequest povFrameRequest = new PovFrameRequest();
         povFrameRequest.setHeight(height);
@@ -35,9 +43,14 @@ public class FrameStreamService {
         List<PovFrame> frames = this.frameParseService.getFrames(povFrameRequest);
         end = Math.min(end, frames.size());
         start = Math.max(0, start);
-        return this.join(
-                frames.subList(start, end)
-        );
+        return Region.builder()
+                .frames(
+                        this.join(
+                                frames.subList(start, end)
+                        )
+                )
+                .includeEndFrame(end >= frames.size())
+                .build();
     }
 
     private String join(List<PovFrame> frames) {
