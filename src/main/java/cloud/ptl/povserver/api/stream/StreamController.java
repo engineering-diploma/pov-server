@@ -7,6 +7,7 @@ import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -70,8 +71,11 @@ public class StreamController {
             @RequestParam("width") int width,
             @RequestParam("sampleInterval") int sampleInterval,
             @RequestParam("start") int start,
-            @RequestParam("end") int end
+            @RequestParam("end") Integer end,
+            HttpServletResponse response
     ) throws NotFoundException, IOException, InterruptedException {
-        return this.frameStreamService.getVideoRegion(videoId, height, width, sampleInterval, start, end);
+        FrameStreamService.Region region = this.frameStreamService.getVideoRegion(videoId, height, width, sampleInterval, start, end);
+        response.setHeader("contains-end", region.getIncludeEndFrame().toString());
+        return region.getFrames();
     }
 }
