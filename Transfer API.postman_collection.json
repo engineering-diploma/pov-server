@@ -12,14 +12,14 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{url}}/api/video/4",
+          "raw": "{{url}}/api/video/5",
           "host": [
             "{{url}}"
           ],
           "path": [
             "api",
             "video",
-            "4"
+            "5"
           ]
         },
         "description": "Request single full sized video from server. Last element is video id. The only way to obtain this id is to listen on rabbit queue. Each time user asks to play video this id is send to user."
@@ -113,6 +113,47 @@
           "body": null
         }
       ]
+    },
+    {
+      "name": "request frames",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/frames/2?width=10&height=10&sampleInterval=100&start=0&end=70",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "frames",
+            "2"
+          ],
+          "query": [
+            {
+              "key": "width",
+              "value": "10"
+            },
+            {
+              "key": "height",
+              "value": "10"
+            },
+            {
+              "key": "sampleInterval",
+              "value": "100"
+            },
+            {
+              "key": "start",
+              "value": "0"
+            },
+            {
+              "key": "end",
+              "value": "70"
+            }
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "auth": {
@@ -120,14 +161,34 @@
     "basic": [
       {
         "key": "password",
-        "value": "apidemo",
+        "value": "test",
         "type": "string"
       },
       {
         "key": "username",
-        "value": "api",
+        "value": "test",
         "type": "string"
       }
     ]
-  }
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
 }

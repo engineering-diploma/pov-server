@@ -21,7 +21,7 @@
     </repositories>
     <groupId>cloud.ptl</groupId>
     <artifactId>pov-server</artifactId>
-    <version>1.0</version>
+    <version>1.6.2</version>
     <name>pov-server</name>
     <description>Demo project for Spring Boot</description>
     <properties>
