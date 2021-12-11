@@ -35,8 +35,9 @@ def save_to_file(buffer):
             if frame is None:
                 continue
             for row in frame:
-                for c in row:
-                    file.write(f"{c} ")
+                for i in range(0,len(row),3):
+                   file.write(f"{row[i]: <3} {row[i + 1]: <3} {row[i + 2]: <3} \t")
+                #   file.write(f"{row[i]} ")
                 file.write("\n")
             file.write(f'End of frame no. {idx}\n')
 
