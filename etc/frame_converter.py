@@ -1,23 +1,23 @@
-import sys, cv2, os
-from multiprocessing import Pool, cpu_count, Lock
-from multiprocessing.pool import ThreadPool
+import sys
+import cv2
+from multiprocessing import Pool, cpu_count
 from PIL import Image
-from queue import Queue
 
-filename = sys.argv[1]
-outputname = sys.argv[2]
-width = int(sys.argv[3])
-height = int(sys.argv[4])
-keying_freq = int(sys.argv[5])
+args = sys.argv
 
-mode = "SINGLE"
-if len(sys.argv) == 7:
-    mode = sys.argv[6]
-mp_count = cpu_count()  # TODO insert cpu count as param(maybe)
+filename = args[1]
+outputname = args[2]
+width = int(args[3])
+height = int(args[4])
+keying_freq = int(args[5])
+mode = 'SINGLE'
+if len(args) == 7:
+    if args[6] == 'SINGLE' or args[6] == 'DOUBLE':
+        mode = args[6]
+
+mp_count = cpu_count()
 
 buffer = []
-
-
 def set_buffer():
     video = cv2.VideoCapture(filename)
     success, image = video.read()
@@ -25,25 +25,22 @@ def set_buffer():
     while success:
         video.set(cv2.CAP_PROP_POS_MSEC, step * keying_freq)
         success, image = video.read()
+        if not success:
+            break
         buffer.append([step, image])
         step += 1
 
 
-def save_to_file(buffer):
+def save_to_file(buffer_out):
     with open(outputname, "w") as file:
-        for idx, frame in buffer:
+        for idx, frame in buffer_out:
             if frame is None:
                 continue
             for row in frame:
-                for i in range(0,len(row),3):
-                   file.write(f"{row[i]: <3} {row[i + 1]: <3} {row[i + 2]: <3} \t")
-                #   file.write(f"{row[i]} ")
+                for i in range(0, len(row), 3):
+                    file.write(f"{row[i]: <3} {row[i + 1]: <3} {row[i + 2]: <3} \t")
                 file.write("\n")
             file.write(f'End of frame no. {idx}\n')
-
-
-def parsepixel(pixel):
-    pass
 
 
 def prepare_frame(frame):
@@ -60,30 +57,45 @@ def prepare_frame(frame):
                 row.append(r)
                 row.append(g)
                 row.append(b)
-            # print(len(row))
             result.append(row)
     elif mode == "DOUBLE":
-        pass
+        half = int(3 * height / 2)
+        res_first = []
+        res_second = []
+        for i in range(frame.width):
+            row = []
+            if i % 2 == 0:
+                for j in range(frame.height):
+                    pos = i, j
+                    px = frame.getpixel(pos)
+                    r = int(px[0])
+                    g = int(px[1])
+                    b = int(px[2])
+                    row.append(r)
+                    row.append(g)
+                    row.append(b)
+                if i % 2 == 0:
+                    res_first.append(row)
+                else:
+                    new_front = row[half:]
+                    new_back = row[:half]
+                    row = new_front + new_back
+                    res_second.insert(0, row)
+            result = res_first + res_second
     return result
 
 
 def algorithm(buf):
     frame_idx, image = buf
-    if image is None:
-        return
     img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     frame = Image.fromarray(img)
     frame = frame.resize((width, height))
-    print("Converting frame no. " + str(frame_idx))
     f = prepare_frame(frame)
-    print("Frame no. " + str(frame_idx) + " converted")
     return frame_idx, f
 
 
 if __name__ == "__main__":
     set_buffer()
-    pool = ThreadPool(mp_count)
+    pool = Pool(mp_count)
     results = pool.map(algorithm, buffer)
-    # results = [algorithm(x) for x in buffer]
-    results.remove(None)
     save_to_file(results)
