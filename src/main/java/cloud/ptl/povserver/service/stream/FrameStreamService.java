@@ -33,13 +33,14 @@ public class FrameStreamService {
         this.resourceService = resourceService;
     }
 
-    public Region getVideoRegion(Long videoId, int height, int width, int sampleInterval, int start, Integer end) throws IOException, NotFoundException, InterruptedException {
+    public Region getVideoRegion(Long videoId, int height, int width, int sampleInterval, int start, Integer end, String ledStrip) throws IOException, NotFoundException, InterruptedException {
         ResourceDAO requestedResource = this.resourceService.findById(videoId);
         PovFrameRequest povFrameRequest = new PovFrameRequest();
         povFrameRequest.setHeight(height);
         povFrameRequest.setWidth(width);
         povFrameRequest.setSamplingInterval(sampleInterval);
         povFrameRequest.setResourceDAO(requestedResource);
+        povFrameRequest.setLedStrip(ledStrip);
         List<PovFrame> frames = this.frameParseService.getFrames(povFrameRequest);
         end = Math.min(end, frames.size());
         start = Math.max(0, start);

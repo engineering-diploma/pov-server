@@ -72,9 +72,10 @@ public class StreamController {
             @RequestParam("sampleInterval") int sampleInterval,
             @RequestParam("start") int start,
             @RequestParam("end") Integer end,
+            @RequestParam("ledStrip") String ledStrip,
             HttpServletResponse response
     ) throws NotFoundException, IOException, InterruptedException {
-        FrameStreamService.Region region = this.frameStreamService.getVideoRegion(videoId, height, width, sampleInterval, start, end);
+        FrameStreamService.Region region = this.frameStreamService.getVideoRegion(videoId, height, width, sampleInterval, start, end, ledStrip);
         response.setHeader("contains-end", region.getIncludeEndFrame().toString());
         return region.getFrames();
     }

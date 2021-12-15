@@ -9,4 +9,5 @@ public class PovFrameRequest {
     private int height;
     private int samplingInterval;
     private ResourceDAO resourceDAO;
+    private String ledStrip;
 }
