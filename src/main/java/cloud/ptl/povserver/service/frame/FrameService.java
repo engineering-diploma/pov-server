@@ -18,13 +18,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 @Slf4j
 public class FrameService {
-    private final String CONVERSION_COMMAND = "etc/frame_converter.sh %s %s %d %d %d";
+    private final String CONVERSION_COMMAND = "etc/frame_converter.sh %s %s %d %d %d %s";
     private final ResourceService resourceService;
     private final ResolutionService resolutionService;
     @Value("${ptl.download.converted}")
@@ -86,8 +87,10 @@ public class FrameService {
                         destination,
                         request.getWidth(),
                         request.getHeight(),
-                        request.getSamplingInterval()
+                        request.getSamplingInterval(),
+                        request.getLedStrip()
                 );
+        log.info("Executing command " + inflatedCommand);
         this.convert(inflatedCommand);
         ResourceDAO newResourceDAO = new ResourceDAO();
         newResourceDAO.setTitle(request.getResourceDAO().getTitle());
@@ -164,7 +167,7 @@ public class FrameService {
         return this.convertedDir.getAbsolutePath()
                 + File.separator
                 + request.getResourceDAO().getTitle().replace(" ", "_")
-                + "_" + request.getWidth() + "x" + request.getHeight() + "_" + request.getSamplingInterval() + "ms.frames";
+                + "_" + request.getWidth() + "x" + request.getHeight() + "_" + request.getSamplingInterval() + "ms_" + request.getLedStrip() + ".frames";
     }
 
     public List<PovFrame> getFrames(PovFrameRequest request) throws IOException, NotFoundException, InterruptedException {
@@ -185,7 +188,7 @@ public class FrameService {
             List<PovFrame.Cell> cellLine = new ArrayList<>();
             List<String> pixels = List.of(line.split("\t"));
             for (String pixel : pixels) {
-                pixel = pixel.replace("  ", " ");
+                pixel = pixel.replaceAll(" +", " ");
                 List<String> RGB = List.of(pixel.split(" "));
                 PovFrame.Cell cell = new PovFrame.Cell();
                 cell.setR(RGB.get(0));

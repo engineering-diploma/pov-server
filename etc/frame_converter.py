@@ -60,7 +60,7 @@ def prepare_frame(frame):
                 row.append(r)
                 row.append(g)
                 row.append(b)
-            print(len(row))
+            # print(len(row))
             result.append(row)
     elif mode == "DOUBLE":
         pass
@@ -74,7 +74,9 @@ def algorithm(buf):
     img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     frame = Image.fromarray(img)
     frame = frame.resize((width, height))
+    print("Converting frame no. " + str(frame_idx))
     f = prepare_frame(frame)
+    print("Frame no. " + str(frame_idx) + " converted")
     return frame_idx, f
 
 

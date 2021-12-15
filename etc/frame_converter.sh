@@ -14,4 +14,4 @@ else
   . venv/bin/activate
 fi
 
-python3 frame_converter.py "$1" "$2" "$3" "$4" "$5"
+python3 frame_converter.py "$1" "$2" "$3" "$4" "$5" "$6"

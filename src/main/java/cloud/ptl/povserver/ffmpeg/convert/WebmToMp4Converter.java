@@ -72,6 +72,7 @@ public class WebmToMp4Converter extends ResourceConverter {
                         convertRequest.getFileToConvert().getAbsolutePath(),
                         convertRequest.getDestinationFolder().getAbsolutePath() + File.separator + convertRequest.getFileToConvert().getName()
                 );
+        log.info("Executing command " + inflateCommand);
         this.run(inflateCommand);
     }
 }
