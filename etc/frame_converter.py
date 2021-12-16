@@ -1,3 +1,4 @@
+import os.path
 import sys
 import cv2
 from multiprocessing import Pool, cpu_count
@@ -11,14 +12,17 @@ width = int(args[3])
 height = int(args[4])
 keying_freq = int(args[5])
 mode = 'SINGLE'
-if len(args) == 7:
-    if args[6] == 'SINGLE' or args[6] == 'DOUBLE':
-        mode = args[6]
+
+if len(args) == 7 and (args[6] == 'SINGLE' or args[6] == 'DOUBLE'):
+    mode = args[6]
 
 mp_count = cpu_count()
 
 buffer = []
 def set_buffer():
+    if not os.path.isfile(filename):
+        print("Wrong file provided!")
+        return False
     video = cv2.VideoCapture(filename)
     success, image = video.read()
     step = 0
@@ -29,6 +33,7 @@ def set_buffer():
             break
         buffer.append([step, image])
         step += 1
+    return True
 
 
 def save_to_file(buffer_out):
@@ -60,28 +65,27 @@ def prepare_frame(frame):
             result.append(row)
     elif mode == "DOUBLE":
         half = int(3 * height / 2)
-        res_first = []
-        res_second = []
+        first_strip = []
+        second_strip = []
         for i in range(frame.width):
             row = []
+            for j in range(frame.height):
+                pos = i, j
+                px = frame.getpixel(pos)
+                r = int(px[0])
+                g = int(px[1])
+                b = int(px[2])
+                row.append(r)
+                row.append(g)
+                row.append(b)
             if i % 2 == 0:
-                for j in range(frame.height):
-                    pos = i, j
-                    px = frame.getpixel(pos)
-                    r = int(px[0])
-                    g = int(px[1])
-                    b = int(px[2])
-                    row.append(r)
-                    row.append(g)
-                    row.append(b)
-                if i % 2 == 0:
-                    res_first.append(row)
-                else:
-                    new_front = row[half:]
-                    new_back = row[:half]
-                    row = new_front + new_back
-                    res_second.insert(0, row)
-            result = res_first + res_second
+                first_strip.append(row)
+            else:
+                new_front = row[half:]
+                new_back = row[:half]
+                row = new_front + new_back
+                second_strip.insert(0, row)
+        result = first_strip + second_strip
     return result
 
 
@@ -95,7 +99,7 @@ def algorithm(buf):
 
 
 if __name__ == "__main__":
-    set_buffer()
-    pool = Pool(mp_count)
-    results = pool.map(algorithm, buffer)
-    save_to_file(results)
+    if set_buffer():
+        pool = Pool(mp_count)
+        results = pool.map(algorithm, buffer)
+        save_to_file(results)
