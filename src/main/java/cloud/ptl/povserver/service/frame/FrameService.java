@@ -1,8 +1,10 @@
 package cloud.ptl.povserver.service.frame;
 
 import cloud.ptl.povserver.data.frame.PovFrame;
+import cloud.ptl.povserver.data.model.Format;
 import cloud.ptl.povserver.data.model.ResolutionDAO;
 import cloud.ptl.povserver.data.model.ResourceDAO;
+import cloud.ptl.povserver.exception.ConversionOngoingException;
 import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.ffmpeg.convert.ConvertRequest;
 import cloud.ptl.povserver.service.resource.ResolutionService;
@@ -18,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,9 +44,10 @@ public class FrameService {
         this.convertedDir.mkdir();
     }
 
-    public ResourceDAO createFramesFrom(PovFrameRequest request) throws IOException, InterruptedException, NotFoundException {
+    public ResourceDAO createResourceFrom(PovFrameRequest request) throws IOException, InterruptedException, NotFoundException, ConversionOngoingException {
         String newFramesFileDestination = this.createName(request);
-        if (this.checkIfFramesFileExist(newFramesFileDestination)) {
+        if (request.getResourceDAO().getConversionOngoing()) throw new ConversionOngoingException();
+        else if (this.checkIfFramesFileExist(newFramesFileDestination)) {
             return this.fetchResourceDaoWithFileName(newFramesFileDestination);
         } else {
             return this.makeNewFramesFile(request, newFramesFileDestination);
@@ -91,14 +93,16 @@ public class FrameService {
                         request.getLedStrip()
                 );
         log.info("Executing command " + inflatedCommand);
+        this.resourceService.markAsConversionStarted(request);
         this.convert(inflatedCommand);
+        this.resourceService.markAsConversionEnded(request);
         ResourceDAO newResourceDAO = new ResourceDAO();
         newResourceDAO.setTitle(request.getResourceDAO().getTitle());
         newResourceDAO.setDescription(request.getResourceDAO().getDescription());
         newResourceDAO.setFrameStream(new File(destination));
         newResourceDAO.setThumbnailUrls(new ArrayList<>());
         request.getResourceDAO().getThumbnailUrls().forEach(el -> newResourceDAO.getThumbnailUrls().add(el));
-        newResourceDAO.setFormat(ConvertRequest.Format.FRAMES);
+        newResourceDAO.setFormat(Format.FRAMES);
         newResourceDAO.setDownloadUrl("");
         newResourceDAO.setIsMovie(true);
         ResolutionDAO resolutionDAO = new ResolutionDAO();
@@ -170,8 +174,8 @@ public class FrameService {
                 + "_" + request.getWidth() + "x" + request.getHeight() + "_" + request.getSamplingInterval() + "ms_" + request.getLedStrip() + ".frames";
     }
 
-    public List<PovFrame> getFrames(PovFrameRequest request) throws IOException, NotFoundException, InterruptedException {
-        ResourceDAO framesResourceDAO = this.createFramesFrom(request);
+    public List<PovFrame> getFrames(PovFrameRequest request) throws IOException, NotFoundException, InterruptedException, ConversionOngoingException {
+        ResourceDAO framesResourceDAO = this.createResourceFrom(request);
         File file = framesResourceDAO.getFrameStream();
         List<String> lines = FileUtils.readLines(file);
         List<PovFrame> povFrames = new ArrayList<>();
@@ -200,4 +204,5 @@ public class FrameService {
         }
         return povFrames;
     }
+
 }
