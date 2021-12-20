@@ -2,6 +2,7 @@ package cloud.ptl.povserver.service.stream;
 
 import cloud.ptl.povserver.data.frame.PovFrame;
 import cloud.ptl.povserver.data.model.ResourceDAO;
+import cloud.ptl.povserver.exception.ConversionOngoingException;
 import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.service.frame.FrameService;
 import cloud.ptl.povserver.service.frame.PovFrameRequest;
@@ -33,7 +34,7 @@ public class FrameStreamService {
         this.resourceService = resourceService;
     }
 
-    public Region getVideoRegion(Long videoId, int height, int width, int sampleInterval, int start, Integer end, String ledStrip) throws IOException, NotFoundException, InterruptedException {
+    public Region getVideoRegion(Long videoId, int height, int width, int sampleInterval, int start, Integer end, String ledStrip) throws IOException, NotFoundException, InterruptedException, ConversionOngoingException {
         ResourceDAO requestedResource = this.resourceService.findById(videoId);
         PovFrameRequest povFrameRequest = new PovFrameRequest();
         povFrameRequest.setHeight(height);

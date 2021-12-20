@@ -2,6 +2,7 @@ package cloud.ptl.povserver.ffmpeg;
 
 // ffmpeg -i 'I made Brett do this....webm' -s 1280x720 -vcodec libx265 'I made Brett do this...1280x720.mp4'
 
+import cloud.ptl.povserver.data.model.Format;
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.ffmpeg.convert.ConvertRequest;
 import cloud.ptl.povserver.ffmpeg.convert.FormatConverter;
@@ -41,10 +42,10 @@ public class FfmpegMediator {
         return this.formatConverter.convert(convertRequest);
     }
 
-    public static ConvertRequest.Format findFormat(String locator) {
-        if (locator.endsWith(".gif")) return ConvertRequest.Format.GIF;
-        else if (locator.endsWith(".mp4")) return ConvertRequest.Format.MP4;
-        else if (locator.endsWith(".webm")) return ConvertRequest.Format.WEBM;
+    public static Format findFormat(String locator) {
+        if (locator.endsWith(".gif")) return Format.GIF;
+        else if (locator.endsWith(".mp4")) return Format.MP4;
+        else if (locator.endsWith(".webm")) return Format.WEBM;
         else throw new IllegalArgumentException(
                     String.format(
                             "Unrecognized file format: %s",

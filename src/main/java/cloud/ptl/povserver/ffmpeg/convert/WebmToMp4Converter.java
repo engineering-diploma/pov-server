@@ -1,5 +1,6 @@
 package cloud.ptl.povserver.ffmpeg.convert;
 
+import cloud.ptl.povserver.data.model.Format;
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.service.resource.ResolutionService;
@@ -26,8 +27,8 @@ public class WebmToMp4Converter extends ResourceConverter {
     }
 
     @Override
-    public boolean supports(ConvertRequest.Format format) {
-        return format.equals(ConvertRequest.Format.WEBM);
+    public boolean supports(Format format) {
+        return format.equals(Format.WEBM);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class WebmToMp4Converter extends ResourceConverter {
         resourceDAO.getThumbnailUrls().forEach(el -> newResourceDAO.getThumbnailUrls().add(el));
         // newResourceDAO.setThumbnailUrls(resourceDAO.getThumbnailUrls());
         newResourceDAO.setIsMovie(true);
-        newResourceDAO.setFormat(ConvertRequest.Format.MP4);
+        newResourceDAO.setFormat(Format.MP4);
         return this.resourceService.save(newResourceDAO);
     }
 

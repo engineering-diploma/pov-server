@@ -1,17 +1,16 @@
 package cloud.ptl.povserver.service.resource;
 
+import cloud.ptl.povserver.data.model.Format;
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.data.repositories.ResourceRepository;
 import cloud.ptl.povserver.exception.NotFoundException;
-import cloud.ptl.povserver.ffmpeg.convert.ConvertRequest;
+import cloud.ptl.povserver.service.frame.PovFrameRequest;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.*;
 import java.util.stream.IntStream;
-
-import static cloud.ptl.povserver.ffmpeg.convert.ConvertRequest.Format.FRAMES;
 
 /**
  * Everything we store in system is resource. It can be gif, picture or movie.
@@ -30,16 +29,16 @@ public class ResourceService {
     }
 
     public Collection<ResourceDAO> findAllMP4Resources() {
-        return this.resourceRepository.findAllByFormatEquals(ConvertRequest.Format.MP4);
+        return this.resourceRepository.findAllByFormatEquals(Format.MP4);
     }
 
     public boolean existsByTitleAndIsFrames(String title) {
-        return this.resourceRepository.existsByTitleAndFormat(title, FRAMES);
+        return this.resourceRepository.existsByTitleAndFormat(title, Format.FRAMES);
     }
 
     public ResourceDAO findByTitleAndIsFrames(String title) throws NotFoundException {
         return this.resourceRepository
-                .findByTitleAndFormat(title, FRAMES)
+                .findByTitleAndFormat(title, Format.FRAMES)
                 .orElseThrow(() -> new NotFoundException("Cannot find resource with title " + title));
     }
 
@@ -92,7 +91,7 @@ public class ResourceService {
     }
 
     public List<ResourceDAO> findAllByTitleContainingAndIsFrameStream(String title) {
-        return this.resourceRepository.findAllByTitleContainingAndFormat(title, FRAMES);
+        return this.resourceRepository.findAllByTitleContainingAndFormat(title, Format.FRAMES);
     }
 
     public boolean existByDownloadUrl(String donwloadUrl) {
@@ -168,5 +167,31 @@ public class ResourceService {
                     if (el.getMovie() != null) el.getMovie().delete();
                     else el.getFrameStream().delete();
                 });
+    }
+
+    public ResourceDAO markAsConversionStarted(ResourceDAO resourceDAO) {
+        resourceDAO.setConversionOngoing(true);
+        return this.resourceRepository.save(resourceDAO);
+    }
+
+    public void markAsConversionStarted(PovFrameRequest request) {
+        request.setResourceDAO(
+                this.markAsConversionStarted(
+                        request.getResourceDAO()
+                )
+        );
+    }
+
+    public ResourceDAO markAsConversionEnded(ResourceDAO resourceDAO) {
+        resourceDAO.setConversionOngoing(false);
+        return this.resourceRepository.save(resourceDAO);
+    }
+
+    public void markAsConversionEnded(PovFrameRequest request) {
+        request.setResourceDAO(
+                this.markAsConversionEnded(
+                        request.getResourceDAO()
+                )
+        );
     }
 }

@@ -1,8 +1,8 @@
 package cloud.ptl.povserver.data.repositories;
 
 
+import cloud.ptl.povserver.data.model.Format;
 import cloud.ptl.povserver.data.model.ResourceDAO;
-import cloud.ptl.povserver.ffmpeg.convert.ConvertRequest;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.File;
@@ -19,13 +19,13 @@ public interface ResourceRepository extends CrudRepository<ResourceDAO, Long> {
 
     Optional<ResourceDAO> findByMovie(File file);
 
-    Optional<ResourceDAO> findByTitleAndFormat(String title, ConvertRequest.Format format);
+    Optional<ResourceDAO> findByTitleAndFormat(String title, Format format);
 
     List<ResourceDAO> findAllByTitleContaining(String title);
 
-    List<ResourceDAO> findAllByTitleContainingAndFormat(String title, ConvertRequest.Format format);
+    List<ResourceDAO> findAllByTitleContainingAndFormat(String title, Format format);
 
-    Collection<ResourceDAO> findAllByFormatEquals(ConvertRequest.Format format);
+    Collection<ResourceDAO> findAllByFormatEquals(Format format);
 
-    boolean existsByTitleAndFormat(String title, ConvertRequest.Format format);
+    boolean existsByTitleAndFormat(String title, Format format);
 }
