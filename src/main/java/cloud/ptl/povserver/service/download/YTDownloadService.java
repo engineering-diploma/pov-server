@@ -146,7 +146,7 @@ public class YTDownloadService implements DownloadService {
         resourceDAO.setTitle(videoInfo.details().title());
         resourceDAO.setResolutions(new ArrayList<>());
         resourceDAO.setDownloadUrl(link);
-        resourceDAO.setFormat(ConvertRequest.Format.WEBM);
+        resourceDAO.setFormat(cloud.ptl.povserver.data.model.Format.WEBM);
         ResolutionDAO resolutionDAO = new ResolutionDAO();
         resolutionDAO.setWidth(videoInfo.bestVideoFormat().width());
         resolutionDAO.setHeight(videoInfo.bestVideoFormat().height());
@@ -157,7 +157,7 @@ public class YTDownloadService implements DownloadService {
 
     private ResourceDAO convertMp4(ResourceDAO resourceDAO) {
         ConvertRequest convertRequest = new ConvertRequest();
-        convertRequest.setSourceFormat(ConvertRequest.Format.WEBM);
+        convertRequest.setSourceFormat(cloud.ptl.povserver.data.model.Format.WEBM);
         convertRequest.setFileToConvert(resourceDAO.getMovie());
         convertRequest.setDestinationFolder(this.youtubeDownloadDir);
         try {

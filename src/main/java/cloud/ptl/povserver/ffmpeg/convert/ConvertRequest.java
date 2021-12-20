@@ -1,5 +1,6 @@
 package cloud.ptl.povserver.ffmpeg.convert;
 
+import cloud.ptl.povserver.data.model.Format;
 import lombok.Data;
 
 import java.io.File;
@@ -10,8 +11,4 @@ public class ConvertRequest {
 
     private File fileToConvert;
     private File destinationFolder;
-
-    public static enum Format {
-        GIF, WEBM, MP4, FRAMES
-    }
 }

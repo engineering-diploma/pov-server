@@ -1,5 +1,6 @@
 package cloud.ptl.povserver.api.stream;
 
+import cloud.ptl.povserver.exception.ConversionOngoingException;
 import cloud.ptl.povserver.exception.NotFoundException;
 import cloud.ptl.povserver.service.stream.FrameStreamService;
 import cloud.ptl.povserver.service.stream.VideoStreamService;
@@ -75,7 +76,14 @@ public class StreamController {
             @RequestParam("ledStrip") String ledStrip,
             HttpServletResponse response
     ) throws NotFoundException, IOException, InterruptedException {
-        FrameStreamService.Region region = this.frameStreamService.getVideoRegion(videoId, height, width, sampleInterval, start, end, ledStrip);
+        FrameStreamService.Region region = null;
+        try {
+            region = this.frameStreamService.getVideoRegion(videoId, height, width, sampleInterval, start, end, ledStrip);
+        } catch (ConversionOngoingException e) {
+            e.printStackTrace();
+            response.setStatus(503);
+            return "(╯ ͠° ͟ʖ ͡°)╯┻━┻";
+        }
         response.setHeader("contains-end", region.getIncludeEndFrame().toString());
         return region.getFrames();
     }

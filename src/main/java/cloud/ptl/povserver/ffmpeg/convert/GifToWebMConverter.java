@@ -1,5 +1,6 @@
 package cloud.ptl.povserver.ffmpeg.convert;
 
+import cloud.ptl.povserver.data.model.Format;
 import cloud.ptl.povserver.data.model.ResolutionDAO;
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import cloud.ptl.povserver.service.resource.ResolutionService;
@@ -30,8 +31,8 @@ public class GifToWebMConverter extends ResourceConverter {
     }
 
     @Override
-    public boolean supports(ConvertRequest.Format format) {
-        return ConvertRequest.Format.GIF.equals(format);
+    public boolean supports(Format format) {
+        return Format.GIF.equals(format);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class GifToWebMConverter extends ResourceConverter {
                         convertRequest.getDestinationFolder().getAbsolutePath() + File.separator + convertRequest.getFileToConvert().getName() + ".mp4"
                 )
         );
-        newResourceDAO.setFormat(ConvertRequest.Format.MP4);
+        newResourceDAO.setFormat(Format.MP4);
         newResourceDAO.setTitle(convertRequest.getFileToConvert().getName());
         return this.resourceService.save(newResourceDAO);
     }

@@ -1,5 +1,6 @@
 package cloud.ptl.povserver.ffmpeg.convert;
 
+import cloud.ptl.povserver.data.model.Format;
 import cloud.ptl.povserver.data.model.ResourceDAO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,7 +10,7 @@ import java.io.InputStreamReader;
 
 @Slf4j
 public abstract class ResourceConverter {
-    public abstract boolean supports(ConvertRequest.Format format);
+    public abstract boolean supports(Format format);
 
     public abstract ResourceDAO convert(ConvertRequest convertRequest) throws IOException, InterruptedException;
 

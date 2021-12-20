@@ -38,7 +38,9 @@ public class ResourceDAO {
     private File frameStream;
 
     @Enumerated(EnumType.STRING)
-    private ConvertRequest.Format format;
+    private Format format;
+
+    private Boolean conversionOngoing;
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -64,5 +66,10 @@ public class ResourceDAO {
         // this is the only simple and declarative method to create sequence of exclusive numbers
         // which will have meaning of order
         if (this.orderr == null) orderr = id;
+    }
+
+    @PostLoad
+    public void init() {
+        if (this.conversionOngoing == null) this.conversionOngoing = false;
     }
 }
